@@ -1,6 +1,8 @@
 # pricosha
 CS 3083 Intro to Databases Project
 
+
+## Live demo: <a href='http://45.55.50.40/' target="_blank">http://45.55.50.40/</a>
 ## Todo
 * Login
 * Post content items

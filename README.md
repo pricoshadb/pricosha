@@ -11,7 +11,7 @@ sudo apt-get install git python python-pip -y
 ```
 git clone https://github.com/pricoshadb/pricosha.git
 cd pricosha/
-pip install -r requirements.txt
+pip install flask pymysql
 export FLASK_APP=app.py
 flask run
 ```

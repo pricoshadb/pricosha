@@ -17,7 +17,7 @@ CS 3083 Intro to Databases Project
 ## Install dependencies
 ```
 sudo apt-get update
-sudo apt-get install git python python-pip -y
+sudo apt-get install git python3 python3-pip -y
 ```
 
 ## Usage

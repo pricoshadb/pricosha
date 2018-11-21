@@ -2,7 +2,6 @@ from flask import Flask, session, request, jsonify
 from flask_cors import CORS
 import pymysql
 from helpers import check_pw
-import hashlib
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -28,18 +27,23 @@ def login():
     email = request.form['email']
     password = request.form['password']
 
-    # See if username and password hash exist in our database
-    c = conn.cursor()
+    # Initialize our cursor with DictCursor to get results back as dictionary
+    c = conn.cursor(pymysql.cursors.DictCursor)
+
+    # Check if username and password hash exist in our database
     sql = '''SELECT first_name, last_name, password_hash FROM Person WHERE email=%s'''
     c.execute(sql, (email,))
-    result = c.fetchone()
-    password_hash = result[2]
+    person = c.fetchone()
+
+    # Check that person exists
+    if person is None:
+        return jsonify('login failed')
 
     # Check password and log user in if success
-    if check_pw(password, password_hash):
+    if check_pw(password, person['password_hash']):
         # Log the user in and set session variables
         session['email'] = email
-        session['first_name'], session['last_name'] = result[0], result[1]
+        session['first_name'], session['last_name'] = person['first_name'], person['last_name']
         return jsonify('successfully logged in %s %s' % (session['first_name'], session['last_name']))
     else:
         return jsonify('login failed')

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, session, request, jsonify
 from flask_cors import CORS
 import pymysql
 from helpers import *
@@ -21,8 +21,9 @@ conn = pymysql.connect(host='localhost',
 
 
 # Login route - POST email and password
-@app.route('/login/', methods=['POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
+
     # Get info from request
     email = request.form['email']
     password = request.form['password']
@@ -34,16 +35,25 @@ def login():
     password_hash = hashlib.sha256(password.encode('utf8')).hexdigest()
 
     # See if username and password hash exist in our database
-    sql = '''SELECT count(*) FROM Person WHERE email=%s AND password_hash=%s'''
+    sql = '''SELECT first_name, last_name FROM Person WHERE email=%s AND password_hash=%s'''
     c.execute(sql, (email, password_hash))
     result = c.fetchone()
 
-    # If the length of the result is 0, then the Person does not exist or
-    # the password is incorrect so we return 'login failed' as JSON.
-    if len(result) > 0:
-        return jsonify('login success')
+    # If user does not exist, result is null
+    if result:
+        # Log the user in
+        session['email'] = email
+        session['first_name'], session['last_name'] = result[0], result[1]
+        return jsonify('successfully logged in %s %s' % (session['first_name'], session['last_name']))
     else:
         return jsonify('login failed')
+
+
+@app.route('/logout/')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('email', None)
+    return jsonify('logged out')
 
 
 # Gets public content

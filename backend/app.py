@@ -59,8 +59,10 @@ def logout():
 # Gets public content
 @app.route('/public_content/')
 def public_content():
+    # Initialize our cursor with DictCursor to get results back as dictionary
+    c = conn.cursor(pymysql.cursors.DictCursor)
+
     # Get content items that are public AND from the past 24 hours
-    c = conn.cursor()
     sql = '''SELECT * FROM ContentItem WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY'''
     c.execute(sql)
     result = c.fetchall()
@@ -69,11 +71,11 @@ def public_content():
     content_items = []
     for content_item in result:
         formatted_data = {
-            'item_id': content_item[0],
-            'email': content_item[1],
-            'post_time': content_item[2],
-            'item_name': content_item[3],
-            'file_path': content_item[5],
+            'item_id': content_item['item_id'],
+            'email': content_item['email'],
+            'post_time': content_item['post_time'],
+            'item_name': content_item['item_name'],
+            'file_path': content_item['file_path'],
         }
         content_items.append(formatted_data)
     return jsonify(content_items)

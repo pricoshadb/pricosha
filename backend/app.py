@@ -13,7 +13,6 @@ conn = pymysql.connect(host='localhost',
                        db='pricosha')
 
 
-
 @app.route('/login/', methods=['POST'])
 def login():
     # Info we get from the request
@@ -30,10 +29,11 @@ def login():
     # If the length of the result is 0, then the Person does not exist or
     # the password is incorrect so we return 'login failed' as JSON.
     #
-    if len(result)>0:
+    if len(result) > 0:
         return jsonify('login success')
     else:
         return jsonify('login failed')
+
 
 @app.route('/public_content/')
 def public_content():
@@ -41,5 +41,15 @@ def public_content():
     sql = '''SELECT * FROM ContentItem WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY'''
     c.execute(sql)
     result = c.fetchall()
-    return jsonify(result)
-
+    content_items = []
+    for content_item in result:
+        formatted_data = {
+            'item_id': content_item[0],
+            'email': content_item[1],
+            'post_time': content_item[2],
+            'item_name': content_item[3],
+            'is_pub': content_item[4],
+            'file_path': content_item[5],
+        }
+        content_items.append(formatted_data)
+    return jsonify(content_items)

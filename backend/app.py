@@ -48,7 +48,6 @@ def public_content():
             'email': content_item[1],
             'post_time': content_item[2],
             'item_name': content_item[3],
-            'is_pub': content_item[4],
             'file_path': content_item[5],
         }
         content_items.append(formatted_data)

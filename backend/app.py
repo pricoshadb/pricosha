@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import pymysql
 from helpers import *
 import hashlib
@@ -14,7 +14,7 @@ conn = pymysql.connect(host='localhost',
 
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login/', methods=['POST'])
 def login():
     # Info we get from the request
     email = request.form['email']
@@ -26,9 +26,20 @@ def login():
     sql = '''SELECT count(*) FROM Person WHERE email=%s AND password_hash=%s'''
     c.execute(sql, (email, password_hash))
     result = c.fetchone()
-    # Does not exist
+
+    # If the length of the result is 0, then the Person does not exist or
+    # the password is incorrect so we return 'login failed' as JSON.
+    #
     if len(result)>0:
-        return 'login success'
+        return jsonify('login success')
     else:
-        return 'login failed'
+        return jsonify('login failed')
+
+@app.route('/public_content/')
+def public_content():
+    c = conn.cursor()
+    sql = '''SELECT * FROM ContentItem WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY'''
+    c.execute(sql)
+    result = c.fetchall()
+    return jsonify(result)
 

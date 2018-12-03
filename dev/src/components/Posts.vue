@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <Post
-    v-for="item, i in content"
+    v-for="item, index in content"
     :key="item.item_id"
     :item='item'
-    @dirty='updatePosts()'>
+    @dirty='updatePost(item.item_id, index)'>
     </Post>
   </v-container>
 </template>
@@ -24,9 +24,11 @@ export default {
     Post,
   },
   methods: {
-    updatePost(item_id) {
+    updatePost(item_id, index) {
       pricosha.getPost(item_id).then(
-        response => {})
+        response => {
+          this.content[index] = response.data
+        })
     },
     updatePosts() {
       if (this.src)

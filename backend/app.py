@@ -1,4 +1,5 @@
 from flask import Flask, session, request, jsonify
+from flask import Flask, session, request, jsonify, make_response
 from flask_cors import CORS
 import pymysql
 from helpers import check_pw
@@ -79,3 +80,13 @@ def public_content():
         }
         content_items.append(formatted_data)
     return jsonify(content_items)
+
+# TODO fetch individual content by id.
+
+@app.route("/img/<path:path>")
+def images(path):
+    fullpath = "./img/" + path
+    bin = open(fullpath, 'rb').read()
+    resp = make_response(bin)
+    resp.content_type = "image/jpeg"
+    return resp

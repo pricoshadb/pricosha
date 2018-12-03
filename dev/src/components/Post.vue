@@ -1,0 +1,64 @@
+<template>
+  <v-card>
+    <v-layout row>
+      <v-img
+        aspect-ratio='1'
+        :src="item.file_path">
+      </v-img>
+      <v-layout col>
+        <v-card-title>
+          <div>
+            <h3 class="headline mb-0">{{item.item_name}}</h3>
+            <span>{{item.email}}</span>
+            <v-layout row  v-if='item.tagged'>
+              <!-- <span v-if='item.tagged'> &mdash; </span> -->
+              <v-subheader class='px-0'>{{item.tagged.join(", ")}}</v-subheader>
+              <v-text-field
+              v-model='tag_value'
+              label='+'
+              @keyup.enter='addTag(item, $event)' solo flat>
+              </v-text-field>
+            </v-layout>
+          </div>
+        </v-card-title>
+        <v-spacer></v-spacer>
+        <v-card-actions>
+          <v-btn flat icon color="primary">
+            <v-icon>chat</v-icon>
+          </v-btn>
+          <v-btn flat icon color="primary">
+            <v-icon>chat</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-layout>
+
+    </v-layout>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: 'Post',
+  data() {
+    return {
+      tag_value: '',
+    }
+  },
+  props: {
+    item: {
+      type: Object,
+      required: true
+    }
+  },
+  methods: {
+    addTag() {
+      pricosha.setTagged(this.item, this.tag_value)
+      this.tag_value=''
+      this.$emit('dirty')
+    }
+  }
+}
+</script>
+
+<style lang="css">
+</style>

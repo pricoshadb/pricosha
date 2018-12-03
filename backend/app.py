@@ -1,4 +1,3 @@
-from flask import Flask, session, request, jsonify
 from flask import Flask, session, request, jsonify, make_response
 from flask_cors import CORS
 import pymysql
@@ -64,7 +63,7 @@ def public_content():
     c = conn.cursor(pymysql.cursors.DictCursor)
 
     # Get content items that are public AND from the past 24 hours
-    sql = '''SELECT * FROM ContentItem WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY'''
+    sql = '''SELECT * FROM contentitem WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY'''
     c.execute(sql)
     result = c.fetchall()
 
@@ -76,7 +75,9 @@ def public_content():
             'email': content_item['email'],
             'post_time': content_item['post_time'],
             'item_name': content_item['item_name'],
-            'file_path': content_item['file_path'],
+            'file_path': '%simg/%s' % (request.url_root, content_item['file_path']),
+			'tagged': ['temp', 'vals']
+			#TODO: tagged people
         }
         content_items.append(formatted_data)
     return jsonify(content_items)

@@ -1,5 +1,13 @@
 <template>
   <v-container>
+    <v-card flat v-if='create_new==false'>
+      <v-layout row justify-center class="py-2">
+        <v-btn large color="primary" @click='create_new=true'>
+          <v-icon>add</v-icon>
+        </v-btn>
+      </v-layout>
+    </v-card>
+    <!-- <CustomPost v-if='create_new==true'></CustomPost> -->
     <Post
     v-for="item, index in content"
     :key="item.item_id"
@@ -11,6 +19,7 @@
 
 <script>
 import Post from './Post.vue'
+import CustomPost from './CustomPost.vue'
 
 export default {
   name: 'Posts',
@@ -22,6 +31,13 @@ export default {
   },
   components: {
     Post,
+    CustomPost,
+  },
+  data() {
+    return {
+      content: [],
+      create_new: false
+    }
   },
   methods: {
     updatePost(item_id, index) {
@@ -43,13 +59,16 @@ export default {
           });
     }
   },
-  data() {
-    return {
-      content: [],
-    }
-  },
   created() {
     this.updatePosts()
+  },
+  watch: {
+    src: {
+      immediate: true,
+      handler (val, old) {
+        this.updatePosts()
+      }
+    }
   }
 }
 </script>

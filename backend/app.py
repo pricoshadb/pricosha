@@ -76,18 +76,20 @@ def public_content():
             'post_time': content_item['post_time'],
             'item_name': content_item['item_name'],
             'file_path': '%simg/%s' % (request.url_root, content_item['file_path']),
-			'tagged': ['temp', 'vals']
-			#TODO: tagged people
+            'tagged': ['temp', 'vals']
+            # TODO: tagged people
         }
         content_items.append(formatted_data)
     return jsonify(content_items)
 
+
 # TODO fetch individual content by id.
+
 
 @app.route("/img/<path:path>")
 def images(path):
-    fullpath = "./img/" + path
-    bin = open(fullpath, 'rb').read()
-    resp = make_response(bin)
+    full_path = "./img/" + path
+    b = open(full_path, 'rb').read()
+    resp = make_response(b)
     resp.content_type = "image/jpeg"
     return resp

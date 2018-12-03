@@ -28,11 +28,11 @@
     methods: {
       login(username, password) {
         pricosha.login(username, password).then(response => {
+          this.$emit('success')
         }).catch(error => {
-          // if (response.status == 400)
           console.error(error);
         }).then(() => {
-          this.$emit('end_dialog');
+          this.$emit('end_dialog')
         });
       }
     }

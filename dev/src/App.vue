@@ -5,7 +5,7 @@
       fixed
       app>
       <v-list dense>
-        <v-list-tile @click="">
+        <v-list-tile @click="drawer=false;content_source='/public_content'">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
@@ -13,8 +13,19 @@
             <v-list-tile-title>Home</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-
-        <v-list-tile @click='login_form=true'>
+        <v-list-tile
+        @click='drawer=false;pricosha.logout();logged_in=false'
+        v-if='logged_in'>
+          <v-list-tile-action>
+            <v-icon>person</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Logout</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+        @click='drawer=false;login_form=true'
+        v-if='!logged_in'>
           <v-list-tile-action>
             <v-icon>person</v-icon>
           </v-list-tile-action>
@@ -24,7 +35,10 @@
         </v-list-tile>
         <v-dialog
         v-model="login_form">
-          <Login @end_dialog='login_form=false'></Login>
+          <Login
+          @end_dialog='login_form=false'
+          @success='logged_in=true'>
+          </Login>
         </v-dialog>
       </v-list>
     </v-navigation-drawer>
@@ -33,11 +47,10 @@
       <v-toolbar-title>PriCoSha</v-toolbar-title>
     </v-toolbar>
     <v-content>
-      <!-- {item_id, email_post, post_time, file_path, and item_name} -->
-        <Posts></Posts>
+      <Posts :src='content_source'></Posts>
     </v-content>
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2018 // Maxwell Colin Reddy // Lucas Pollice // Khoa Nguyen // Andrew Hu</span>
+      <span class="white--text">@ 2018 // Maxwell Colin Reddy // Lucas Pollice // Khoa Nguyen // Andrew Hu</span>
     </v-footer>
   </v-app>
 </template>
@@ -57,6 +70,8 @@
       return {
         login_form: null,
         drawer: null,
+        content_source: '',
+        logged_in: false,
       }
     }
   }

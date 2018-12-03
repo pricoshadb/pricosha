@@ -23,5 +23,8 @@ window.pricosha = {
         password: password
       }
     });
+  },
+  logout() {
+    return axios.get('/logout');
   }
 };

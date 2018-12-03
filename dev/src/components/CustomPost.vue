@@ -1,10 +1,8 @@
 <template>
   <v-card>
     <v-layout row>
-        <v-img
-          aspect-ratio='1'
-          :src="item.file_path">
-        </v-img>
+      <v-flex shrink>
+      </v-flex>
       <v-layout col>
         <v-card-title class="pt-1 pb-0">
           <div>
@@ -17,19 +15,15 @@
               v-model='tag_value'
               label='+'
               hide-details
-              @keyup.enter='addTag(item, $event)' solo flat>
+              @keyup.enter='addTag(item, $event)'
+              solo flat>
               </v-text-field>
             </v-layout>
           </div>
         </v-card-title>
         <v-spacer></v-spacer>
         <v-card-actions>
-          <v-btn flat icon color="primary">
-            <v-icon>share</v-icon>
-          </v-btn>
-          <v-btn flat icon color="primary">
-            <v-icon>chat</v-icon>
-          </v-btn>
+          <v-btn color="primary">Submit</v-btn>
         </v-card-actions>
       </v-layout>
 
@@ -39,7 +33,7 @@
 
 <script>
 export default {
-  name: 'Post',
+  name: 'CustomPost',
   data() {
     return {
       tag_value: '',
@@ -48,7 +42,7 @@ export default {
   props: {
     item: {
       type: Object,
-      required: true
+      required: false
     }
   },
   methods: {

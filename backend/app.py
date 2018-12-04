@@ -83,7 +83,22 @@ def public_content():
     return jsonify(content_items)
 
 
+@app.route('/view_shared_content')
+def view_shared_content():
+    email = session['email']
 # TODO fetch individual content by id.
+
+
+# 5. Post a content item
+@app.route('/post_content_item')
+def post_content_item():
+    if not session['email']:
+        return jsonify('User not logged in')
+    email = session['email']
+    item_name = request.form['item_name']
+    is_pub = request.form['is_pub']
+
+
 
 
 @app.route("/img/<path:path>")

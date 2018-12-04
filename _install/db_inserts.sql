@@ -1,3 +1,11 @@
+-- Clear tables
+DELETE FROM Person;
+DELETE FROM FriendGroup;
+DELETE FROM ContentItem;
+DELETE FROM Posted;
+DELETE FROM Tag;
+DELETE FROM `Share`;
+DELETE FROM Belong;
 -- Insert people
 INSERT INTO Person (email, password_hash, first_name, last_name)
 VALUES
@@ -44,11 +52,11 @@ VALUES
 
 -- Ann posted a content item with item_ID=1, item_name = “Whiskers”, is pub = False, and shared it with her “family” FriendGroup.
 
-INSERT INTO ContentItem(item_id, email, post_time, item_name, is_pub, file_path)
+INSERT INTO ContentItem(item_id, email, item_name, is_pub, file_path)
 VALUES
-(1, 'AA@nyu.edu', NOW(), 'Whiskers', False, NULL);
+(1, 'AA@nyu.edu', 'Whiskers', False, NULL);
 
-INSERT INTO Share(email, fg_name, item_id)
+INSERT INTO `Share`(email, fg_name, item_id)
 VALUES('AA@nyu.edu', 'family',1);
 -- Ann posted a content item with item_ID=2, item_name = “leftovers in fridge”, is pub = False, and shared it with her “roommates” FriendGroup.
 
@@ -56,7 +64,7 @@ INSERT INTO ContentItem(item_id, email, post_time, item_name, is_pub, file_path)
 VALUES
 (2, 'AA@nyu.edu', NOW(), 'leftovers in fridge', False, NULL);
 
-INSERT INTO Share(email, fg_name, item_id)
+INSERT INTO `Share`(email, fg_name, item_id)
 VALUES('AA@nyu.edu', 'roommates', 2);
 
 -- Bob posted a content item with item_ID=3, item_name = “Rover”, is pub = False, and shared it with his “family” FriendGroup.
@@ -67,3 +75,5 @@ VALUES
 
 INSERT INTO Share(email, fg_name, item_id)
 VALUES('BB@nyu.edu', 'family', 3);
+
+

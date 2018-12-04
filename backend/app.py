@@ -12,6 +12,7 @@ app.secret_key = 'super secret key!98nu9f8u2f'
 CORS(app, resources={r"/*": {"origins": '*'}})
 
 
+# Test route
 @app.route('/')
 def index():
     return jsonify('ok')
@@ -21,7 +22,10 @@ def index():
 # + Optional feature 5: Paginated results
 @app.route('/public_content/')
 def public_content():
-    return jsonify(helpers.get_public_content())
+    page = request.form['page']
+    results_per_page = request.form['results_per_page']
+    content = helpers.get_public_content(page=page, results_per_page=results_per_page)
+    return jsonify(content)
 
 
 # 2. Login - POST email and password

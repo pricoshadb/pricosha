@@ -20,11 +20,11 @@ def index():
 
 # 1. View public content posted in the last 24 hours
 # + Optional feature 5: Paginated results
-@app.route('/public_content/')
+@app.route('/public_content/', methods=['GET', 'POST'])
 def public_content():
-    page = request.form['page']
-    results_per_page = request.form['results_per_page']
-    content = helpers.get_public_content(page=page, results_per_page=results_per_page)
+    page = int(request.args.get('page',None))
+    results_per_page = int(request.args.get('results_per_page',10))
+    content = helpers.get_public_content(page=page,results_per_page=results_per_page)
     return jsonify(content)
 
 

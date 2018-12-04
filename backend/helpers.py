@@ -8,18 +8,18 @@ conn = pymysql.connect(host='localhost',
 
 
 # 1. Gets public content from past 24 hours
+#    Also paginates results
 def get_public_content(page=1, results_per_page=10):
     # Initialize our cursor with DictCursor to get results back as dictionary
     c = conn.cursor(pymysql.cursors.DictCursor)
 
     # Get content items that are public AND from the past 24 hours
-    low = (page-1)*results_per_page
-    high = low + results_per_page
-    sql = f'''SELECT * FROM ContentItem 
-              WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY 
-              ORDER BY post_time DESC LIMIT {low},{high}'''
 
-    c.execute(sql)
+    sql = '''SELECT * FROM ContentItem 
+              WHERE is_pub=1 AND post_time >= NOW() - INTERVAL 1 DAY 
+              ORDER BY post_time DESC LIMIT %s,%s'''
+    start = (page-1)*results_per_page
+    c.execute(sql, (start, results_per_page))
     result = c.fetchall()
 
     # Format results

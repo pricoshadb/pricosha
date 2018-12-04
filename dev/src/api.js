@@ -4,9 +4,9 @@ window.pricosha = {
   /***
   @return {item_id, email_post, post_time, file_path, item_name}
   ***/
-  getPublicPosts() {
-    // return axios.get('https://pricoshaapi.drew.hu/public_content');
-    return axios.get('/public_content');
+  getPublicPosts(page=1,results_per_page=10) {
+    var url = '/public_content?page='+page+'&results_per_page='+results_per_page
+    return axios.get(url);
   },
   getPosts(url) {
     return axios.get(url);

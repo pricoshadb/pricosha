@@ -27,7 +27,12 @@ Using Flask for webapp and Flask-MySQL for sql
 ```
 git clone https://github.com/pricoshadb/pricosha.git
 cd pricosha/
-pip install flask flask-mysql
+pip install flask pymysql 
 export FLASK_APP=app.py
 flask run
+```
+
+## deploy to gunicorn
+```
+pip install gunicorn
 ```

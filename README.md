@@ -2,7 +2,8 @@
 CS 3083 Intro to Databases Project
 
 
-## Live demo: <a href='http://45.55.50.40/' target="_blank">http://45.55.50.40/</a>
+## Live demo: <a href='https://pricosha.drew.hu' target="_blank">https://pricosha.drew.hu</a>
+## API: <a href='https://api.pricosha.drew.hu' target='_blank'>https://api.pricosha.drew.hu</a>
 ## Todo
 * Login
 * Post content items

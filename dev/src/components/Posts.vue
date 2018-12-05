@@ -7,7 +7,7 @@
         </v-btn>
       </v-layout>
     </v-card>
-    <!-- <CustomPost v-if='create_new==true'></CustomPost> -->
+    <CustomPost v-if='create_new==true'></CustomPost>
     <Post
     v-for="item, index in content"
     :key="item.item_id"

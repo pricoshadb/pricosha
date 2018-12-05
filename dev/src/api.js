@@ -7,11 +7,14 @@ window.pricosha = {
         page: page,
         results_per_page: results_per_page,
       }
-    });
+    })
   },
   getPost(id) {
     // return axios.get('https://pricoshaapi.drew.hu/item/'+id);
-    return axios.get('/item/%s' % id);
+    return axios.get('/item/%s' % id)
+  },
+  setPost(formdata) {
+    return axios.post('/post_content_item', formdata)
   },
   setTagged() {
     // return axios.put('https://pricoshaapi.drew.hu/tagged')
@@ -24,10 +27,10 @@ window.pricosha = {
         email: email,
         password: password
       }
-    });
+    })
   },
   logout() {
     // return axios.get('https://pricoshaapi.drew.hu/logout');
-    return axios.get('/logout');
+    return axios.get('/logout')
   }
 };

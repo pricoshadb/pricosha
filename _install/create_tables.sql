@@ -65,3 +65,10 @@ CREATE TABLE IF NOT EXISTS  Belong(
    PRIMARY KEY (email_owner, email_member, fg_name),
    FOREIGN KEY (email_owner, fg_name) REFERENCES FriendGroup(email, fg_name) ON DELETE CASCADE,
    FOREIGN KEY (email_member) REFERENCES Person(email) ON DELETE CASCADE);
+
+CREATE TABLE IF NOT EXISTS Saved (
+    email VARCHAR(50),
+    item_id INT,
+    FOREIGN KEY (email) REFERENCES Person(email),
+    FOREIGN KEY (item_id) REFENCES ContentItem(item_id)
+)

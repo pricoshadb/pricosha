@@ -22,7 +22,7 @@ def index():
 # + Optional feature 5: Paginated results
 @app.route('/public_content/', methods=['GET', 'POST'])
 def public_content():
-    page = int(request.args.get('page',None))
+    page = int(request.args.get('page',1))
     results_per_page = int(request.args.get('results_per_page',10))
     content = helpers.get_public_content(page=page,results_per_page=results_per_page)
     return jsonify(content)
@@ -60,11 +60,22 @@ def logout():
 @app.route('/get_shared_content')
 def get_shared_content():
     email = session['email']
+    page = int(request.args.get('page',1))
+    results_per_page = int(request.args.get('results_per_page',10))
+    content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
+    return jsonify(content)
 
 
 # 4. Manage tags
+# 4a. Get proposed tags
 @app.route('/get_proposed_tags')
 def get_proposed_tags():
+    email = session['email']
+    proposed_tags = helpers.get_proposed_tags(email)
+
+# 4b. Modify proposed tag
+@app.route('/modify_proposed_tag')
+def modify_proposed_tag():
     pass
 
 
@@ -77,33 +88,45 @@ def post_content_item():
     email = session['email']
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
-    if 'image_content' in request.form:
-        image_content = request.form['image_content']
-
+    image_content = request.form.get('image_content', None)
+    helpers.create_content_item(email=email,item_name=item_name,is_pub=is_pub,file_path=image_content)
 
 
 # 6. Tag a content item
 @app.route('/tag_content_item', methods=['POST'])
 def tag_content_item():
-    pass
+    current_user = session['email']
+    tagee_email = request.form['tagee_email']
+    item_id = request.form['item_id']
+    helpers.tag_item(current_user,tagee_email,item_id)
 
 
-# 7. Add friend
+# 7. Adds friend to friendgroup that person owns
 @app.route('/add_friend', methods=['POST'])
 def add_friend():
-    friend_group = request.form['friend_group']
-    first_name, last_name = request.form['first_name'], request.form['last_name']
+    owner_email = session['email']
+    fg_name = request.form['fg_name']
+    friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
+
+    helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
+
 
 # Optional feature 2: Profile pages
 @app.route('/get_profile_info')
 def profile_info():
     pass
 
-# Optional feature 3: Saved posts
+
+# Optional feature 3: Saved posts. Gets post that user has saved
 # + Optional feature 5: Paginated results
 @app.route('/get_saved_posts')
 def get_saved_posts():
-    pass
+    email = session['email']
+    page = int(request.args.get('page',1))
+    results_per_page = int(request.args.get('results_per_page',10))
+    saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
+    return jsonify(saved_posts)
+
 
 # Optional feature 6: Add comments
 @app.route('/post_comment')

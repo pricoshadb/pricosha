@@ -64,33 +64,54 @@ def get_login(email, password):
     c.execute(sql, (email,))
     person = c.fetchone()
 
-    # Check password and log user in if success
+    # Check that person exists
     if person is None:
-<<<<<<< HEAD
-        return 'Email does not exist'
-=======
-        c = conn.cursor()
-        sql = '''INSERT INTO 
-                  person(email, password_hash)
-                  VALUES (%s,%s,%s,%s)'''
-        c.execute(sql, (email, hashlib.sha256(password.encode('utf8')).hexdigest(), email.split('@')[0], ''))
-        conn.commit()
->>>>>>> eed529d04ee8e091005876f41938697fb5b94289
+        return {
+            'success': False,
+            'response': 'Email does not exist'
+        }
 
+    # Check password and log user in if success
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
         # Log the user in and set session variables
         return {
-            'email': email,
-            'first_name': person['first_name'],
-            'last_name': person['last_name'],
-            'avatar': person['avatar']
+            'success': True,
+            'response': {
+                'email': email,
+                'first_name': person['first_name'],
+                'last_name': person['last_name'],
+                'avatar': person['avatar']
+            }
         }
-<<<<<<< HEAD
     else:
-        return 'Incorrect password'
-=======
-    return False
->>>>>>> eed529d04ee8e091005876f41938697fb5b94289
+        return {
+            'success': False,
+            'response': 'Incorrect password'
+        }
+
+
+def register(email, password, first_name, last_name):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''INSERT INTO Person(email, password_hash, first_name, last_name)
+              VALUES (%s,SHA2(%s, 256), %s, %s)'''
+    c.execute(sql, (email, password, first_name, last_name))
+    conn.commit()
+    return {
+        'success': True,
+        'response': f'Successfully registered user {first_name} {last_name}'
+    }
+
+
+def reset_password(email, old_password, new_password):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''UPDATE Person SET password_hash=SHA2(%s,256) 
+              WHERE password_hash=SHA2(%s,256) AND email=%s'''
+    c.execute(sql, (new_password, old_password, email))
+    conn.commit()
+    return {
+        'success': True,
+        'response': f'Successfully changed password for {email}'
+    }
 
 
 # 3. Get content shared with email

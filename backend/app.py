@@ -2,6 +2,16 @@ from flask import Flask, session, request, jsonify, make_response, render_templa
 from flask_cors import CORS
 import helpers
 
+
+'''
+Full documentation: https://pricoshaapi.drew.hu
+Optional features:
+
+Paginated results
+User avatar?
+
+
+'''
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -41,7 +51,7 @@ def login():
     # Attempt login
     user = helpers.get_login(email, password)
 
-    if login:
+    if login['success']:
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
         session['avatar'] = user['avatar']
@@ -57,6 +67,26 @@ def logout():
     # remove the username from the session if it's there
     session.pop('email', None)
     return jsonify('logged out')
+
+
+# Registers new user
+@app.route('/register', methods=['POST'])
+def register():
+    email = request.form['email']
+    password = request.form['password']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    new_user = helpers.register(email, password, first_name, last_name)
+    return jsonify(new_user)
+
+# Resets user password
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    email = session['email']
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    pw_reset = helpers.reset_password(email, old_password, new_password)
+    return jsonify(pw_reset)
 
 
 # 3. View shared content items and info about them

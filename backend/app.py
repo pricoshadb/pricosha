@@ -21,18 +21,18 @@ def index():
 # 1. View public content posted in the last 24 hours
 # + Optional feature 5: Paginated results
 # Tested WORKING on 12/4
-@app.route('/public_content/', methods=['GET', 'POST'])
+@app.route('/public_content')
 def public_content():
-    page = request.form.get('page',1)
-    results_per_page = request.form.get('results_per_page',10)
-    content = helpers.get_public_content(page=page,results_per_page=results_per_page)
+    page = int(request.form.get('page',1))
+    results_per_page = int(request.form.get('results_per_page',10))
+    content = helpers.get_public_content(page,results_per_page)
     return jsonify(content)
 
 
 # 2. Login - POST email and password
 # + Optional feature 1: User avatar. Avatar is url to static image. Avatars are public so no need to make private
 # Tested WORKING on 12/4
-@app.route('/login/', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     # Get info from request
     email = request.form['email']
@@ -52,7 +52,7 @@ def login():
 
 # Logs out user
 # Tested WORKING on 12/4
-@app.route('/logout/')
+@app.route('/logout')
 def logout():
     # remove the username from the session if it's there
     session.pop('email', None)

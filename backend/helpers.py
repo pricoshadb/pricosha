@@ -9,16 +9,16 @@ conn = pymysql.connect(host='localhost',
 
 # Helper functions
 
-# Checks if user can see content item
+# Checks if user can see content item, bc item is public
 def can_see(email, item_id):
     c = conn.cursor(pymysql.cursors.DictCursor)
-    sql = '''select count(*) AS count from ContentItem 
+    sql = '''select count(*) AS cnt from ContentItem 
                 NATURAL JOIN Share 
                 NATURAL JOIN Belong 
                 WHERE (email_member=%s OR is_pub=True) AND item_id=%s'''
     c.execute(sql, (email, item_id))
     result = c.fetchone()
-    return result['count'] > 0
+    return result['cnt'] > 0
 
 
 # 1. Gets public content from past 24 hours
@@ -66,7 +66,7 @@ def get_login(email, password):
 
     # Check that person exists
     if person is None:
-        return False
+        return 'Email does not exist'
 
     # Check password and log user in if success
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
@@ -78,7 +78,7 @@ def get_login(email, password):
             'avatar': person['avatar']
         }
     else:
-        return False
+        return 'Incorrect password'
 
 
 # 3. Get content shared with email
@@ -96,10 +96,12 @@ def get_shared_content(email, page=1, results_per_page=10):
 
 # 4. Manage tags
 # 4a. Get proposed tags
-def get_proposed_tags(email):
+def get_proposed_tags(email, page=1, results_per_page=10):
     c = conn.cursor(pymysql.cursors.DictCursor)
-    sql = '''SELECT * FROM Tag WHERE email_tagged=%s AND status=False'''
-    c.execute(sql, (email,))
+    sql = '''SELECT * FROM Tag WHERE email_tagged=%s AND status=False
+              ORDER BY tag_time DESC LIMIT %s,%s'''
+    start = (page - 1) * results_per_page
+    c.execute(sql, (email, start, results_per_page))
     tags = c.fetchall()
     return tags
 
@@ -130,20 +132,33 @@ def create_content_item(email, item_name, is_pub, file_path):
 
 
 # 6. Tag a content item
-def tag_item(current_user, tagee_email, item_id):
+def tag_item(tagger_email, tagee_email, item_id):
     c = conn.cursor(pymysql.cursors.DictCursor)
 
-    # Check if user has access to item
-    if not can_see(current_user, item_id):
-        return 'User does not have access to this item'
+    # Check if users have access to item
+    if not can_see(tagger_email, item_id):
+        return 'Tagger does not have access to this item'
+
+    if not can_see(tagee_email, item_id):
+        return 'Tagee does not have access to this item'
+
     confirmed = False
+
     # Check if user is self-tagging
-    if current_user == tagee_email:
+    if tagger_email == tagee_email:
         confirmed = True
+
+    # Check if user is already tagged
+    sql = '''SELECT COUNT(*) AS cnt FROM Tag 
+              WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
+    c.execute(sql, (tagger_email, tagee_email, item_id))
+    result = c.fetchone()
+    if result['cnt'] > 0:
+        return 'User is already tagged'
 
     sql = '''INSERT INTO Tag(email_tagger, email_tagged, item_id, tag_time, status)
               VALUES (%s,%s,%s,NOW(),%s)'''
-    c.execute(sql, (current_user, tagee_email, item_id, confirmed))
+    c.execute(sql, (tagger_email, tagee_email, item_id, confirmed))
     conn.commit()
 
 
@@ -220,4 +235,3 @@ def post_comment(email, item_id, comment):
     c.execute(sql, (item_id, email, comment))
     conn.commit()
     return True
-

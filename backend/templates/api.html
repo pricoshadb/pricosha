@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+  <title>PriCoSha API Documentation</title>
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <style>
+
+
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    html, body {
+      font-family: 'Montserrat', "Helvetica", "Arial", "sans-serif";
+      line-height: 1.5em;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+    }
+    h3 {
+      font-weight: bold
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    .method {
+      font-family: 'Ubuntu Mono', monospace, 'Courier New', 'Courier';
+      font-weight: 800;
+    }
+    .code, code {
+      font-family: 'Ubuntu Mono', monospace, 'Courier New', 'Courier';
+      background: #efefef;
+      padding: 2px 4px;
+      border-radius: 4px
+    }
+    a {
+      color: cornflowerblue;
+      text-decoration: underline;
+    }
+    a:hover {
+      color: royalblue;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h4 {
+      font-size: 1.4em;
+    }
+
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div style="margin-top: 80px;">
+    <h1><strong>PriCoSha API Documentation</strong></h1>
+    <br/><br/>
+  </div>
+  <h2><strong>Table of Contents</strong></h2>
+  <ul>
+    <li><code>GET</code> <a href="#public_content">/public_content</a></li>
+    <li><code>POST</code> <a href="#login">/login</a></li>
+    <li><code>POST</code> <a href="#logout">/logout</a></li>
+    <li><code>GET</code> <a href="#get_shared_content">/get_shared_content</a></li>
+    <li><code>GET</code> <a href="#get_proposed_tags">/get_proposed_tags</a></li>
+    <li><code>POST</code> <a href="#modify_proposed_tag">/modify_proposed_tag</a></li>
+    <li><code>POST</code> <a href="#post_content_item">/post_content_item</a></li>
+    <li><code>POST</code> <a href="#tag_content_item">/tag_content_item</a></li>
+    <li><code>POST</code> <a href="#add_friend">/add_friend</a></li>
+    <li></li>
+    <li></li>
+  </ul>
+  <h2><strong>Methods</strong></h2>
+  <hr>
+  <ul>
+    <!-- 1. /public_content -->
+    <li id="public_content">
+      <h3><code>Use case 1: View public content</code></h3>
+      <h4 class="method"><code>GET</code> <a href="">/public_content</a></h4>
+      <p>View public content posted in the last 24 hours</p>
+      <p>Parameters:</p>
+      <span>(Optional) <code>page</code>: Returns paginated results. Default page 1</span><br/>
+      <span>(Optional) <code>results_per_page</code>: Number of results per page. Default 10</span>
+      <p>Example response:</p>
+      <pre class="code">[
+    {
+        "email":"AA@nyu.edu",
+        "file_path":"https://pricosha.drew.hu/img/none",
+        "item_id":9,
+        "item_name":"new",
+        "post_time":"Wed, 05 Dec 2018 04:46:55 GMT",
+        "tagged":["temp","vals"]
+    },
+    ...
+]</pre>
+    </li>
+    <hr>
+    <!-- 2. /login -->
+    <li id="login">
+      <h3><code>Use case 2: Login</code></h3>
+      <h4 class="method"><code>POST</code> <a href="">/login</a></h4>
+      <p>Logs user in. Returns error if user does not exist or incorrect password</p>
+      <p>Parameters:</p>
+      <span>(Required) <code>email</code>: Account email</span><br/>
+      <span>(Required) <code>password</code>: Password for account</span>
+      <p>Example response:</p>
+      <pre class="code">{'Successfully logged in Nervous Nelly'}</pre>
+    </li>
+
+    <!-- 2. /logout -->
+    <li id="logout">
+      <h4 class="method"><code>POST</code> <a href="">/logout</a></h4>
+      <p>Logs user out.</p>
+    </li>
+    <hr>
+    <!-- 3. /get_shared_content -->
+    <li id="get_shared_content">
+      <h3><code>Use case 3: View shared content items and info about them</code></h3>
+      <h4 class="method"><code>GET</code> <a href="">/get_shared_content</a></h4>
+      <p>View shared content with user. Returns error if user is not logged in</p>
+      <p>Parameters:</p>
+      <span>(Optional) <code>page</code>: Returns paginated results. Default page 1</span><br/>
+      <span>(Optional) <code>results_per_page</code>: Number of results per page. Default 10</span>
+      <p>Example response:</p>
+      <pre class="code">[
+    {
+        "email": "AA@nyu.edu",
+        "email_member": "AA@nyu.edu",
+        "email_owner": "AA@nyu.edu",
+        "fg_name": "family",
+        "file_path": null,
+        "is_pub": 0,
+        "item_id": 1,
+        "item_name": "Whiskers",
+        "post_time": "Wed, 05 Dec 2018 04:35:38 GMT"
+    },
+    ...
+]</pre>
+    </li>
+    <hr>
+
+    <!-- 4. /get_proposed_tags -->
+    <li id="get_proposed_tags">
+      <h3><code>Use case 4: Manage tags</code></h3>
+      <h4 class="method"><code>GET</code> <a href="">/get_proposed_tags</a></h4>
+      <p>Get proposed tags e.g. where tagee is current user and status is false</p>
+      <p>Parameters:</p>
+      <span>(Optional) <code>page</code>: Returns paginated results. Default page 1</span><br/>
+      <span>(Optional) <code>results_per_page</code>: Number of results per page. Default 10</span>
+      <p>Example response:</p>
+      <pre class="code">[
+    {
+        "email_tagged": "FF@nyu.edu",
+        "email_tagger": "AA@nyu.edu",
+        "item_id": 1,
+        "status": 0,
+        "tag_time": "Wed, 05 Dec 2018 18:51:26 GMT"
+    },
+    ...
+]</pre>
+    </li>
+    <li id="modify_proposed_tag">
+      <h4 class="method"><code>POST</code> <a href="">/modify_proposed_tag</a></h4>
+      <p>Get proposed tags e.g. where tagee is current user and status is false</p>
+      <p>Parameters:</p>
+      <span>(Required) <code>email_tagger</code>: Email of tagger</span><br/>
+      <span>(Required) <code>item_id</code>: item_id of ContentItem</span>
+      <span>(Required) <code>decision</code>: Decision about tag: <code>accept</code>, <code>decline</code>, or <code>no decision</code></span>
+      <p>Example response:</p>
+      <pre class="code">[
+    {
+        "email_tagged": "FF@nyu.edu",
+        "email_tagger": "AA@nyu.edu",
+        "item_id": 1,
+        "status": 0,
+        "tag_time": "Wed, 05 Dec 2018 18:51:26 GMT"
+    },
+    ...
+]</pre>
+    </li>
+    <hr>
+    <li id="post_content_item">
+      <h3><code>Use case 5: Post a content item</code></h3>
+      <h4 class="method"><code>POST</code> <a href="">/post_content_item</a></h4>
+      <p>Get proposed tags e.g. where tagee is current user and status is false</p>
+      <p>Parameters:</p>
+      <span>(Required) <code>item_name</code>: Name of the new ContentItem</span><br/>
+      <span>(Required) <code>is_pub</code>: Makes ContentItem public or not</span>
+      <span>(Optional) <code>image_content</code>: Image content</span>
+      <p>Example response:</p>
+      <pre class="code">[
+    {
+        "email_tagged": "FF@nyu.edu",
+        "email_tagger": "AA@nyu.edu",
+        "item_id": 1,
+        "status": 0,
+        "tag_time": "Wed, 05 Dec 2018 18:51:26 GMT"
+    },
+    ...
+]</pre>
+      <hr>
+    </li>
+    <li id="tag_content_item">
+      <h3><code>Use case 6: Tag a content item</code></h3>
+      <h4 class="method"><code>POST</code> <a href="">/tag_content_item</a></h4>
+      <p>Tags user in ContentItem</p>
+      <p>Parameters:</p>
+      <span>(Required) <code>tagee_email</code>: Email of tagged user</span>
+      <span>(Required) <code>item_id</code>: item_id of ContentItem</span>
+      <p>Example response:</p>
+      <pre class="code">{'Successfully tagged Fred Fox'}</pre>
+      <hr>
+    </li>
+    <li id="add_friend">
+      <h3><code>Use case 7: Add friend</code></h3>
+      <h4 class="method"><code>POST</code> <a href="">/add_friend</a></h4>
+      <p>Adds friend to FriendGroup</p>
+      <p>Parameters:</p>
+      <span>(Required) <code>fg_name</code>: Name of FriendGroup to add person to. Current user must own FriendGroup</span><br/>
+      <span>(Required) <code>friend_fname</code>: First name of person to add.</span>
+      <span>(Required) <code>friend_lname</code>: Last name of person to add</span>
+      <p>An error will be returned if the person is already in the friend group or if more than one person with the name
+        exists</p>
+      <p>Example response:</p>
+      <pre class="code">{'Successfully added Fred Fox to friend group Family'}</pre>
+    </li>
+
+
+  </ul>
+</div>
+
+
+</body>
+
+</html>

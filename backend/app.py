@@ -1,4 +1,4 @@
-from flask import Flask, session, request, jsonify, make_response
+from flask import Flask, session, request, jsonify, make_response, render_template
 from flask_cors import CORS
 import helpers
 
@@ -12,10 +12,10 @@ app.secret_key = 'super secret key!98nu9f8u2f'
 CORS(app, resources={r"/*": {"origins": '*'}})
 
 
-# Test route
+# API Documentation
 @app.route('/')
 def index():
-    return jsonify('ok')
+    return render_template('api.html')
 
 
 # 1. View public content posted in the last 24 hours
@@ -78,20 +78,26 @@ def get_shared_content():
 # Tested WORKING on 12/4
 @app.route('/get_proposed_tags')
 def get_proposed_tags():
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
-    proposed_tags = helpers.get_proposed_tags(email)
+    page = request.form.get('page',1)
+    results_per_page = request.form.get('results_per_page',10)
+    proposed_tags = helpers.get_proposed_tags(email, page=page, results_per_page=results_per_page)
     return jsonify(proposed_tags)
 
 # 4b. Modify proposed tag
 # Tested WORKING on 12/4
 @app.route('/modify_proposed_tag', methods=['POST'])
 def modify_proposed_tag():
+    if 'email' not in session:
+        return 'User not logged in'
     email_tagger = request.form['email_tagger']
     email_tagged = session['email']
     item_id = request.form['item_id']
     decision = request.form['decision']
-    helpers.modify_proposed_tag(email_tagger, email_tagged, item_id, decision)
-    return 'ok'
+    result = helpers.modify_proposed_tag(email_tagger, email_tagged, item_id, decision)
+    return jsonify(result)
 
 
 # 5. Post a content item
@@ -99,20 +105,22 @@ def modify_proposed_tag():
 # Tested WORKING on 12/4
 @app.route('/post_content_item', methods=['POST'])
 def post_content_item():
-    if not session['email']:
-        return jsonify('User not logged in')
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
     image_content = request.form.get('image_content', None)
-    helpers.create_content_item(email,item_name,is_pub,image_content)
-    return 'ok'
+    result = helpers.create_content_item(email,item_name,is_pub,image_content)
+    return jsonify(result)
 
 
 # 6. Tag a content item
 # Tested WORKING on 12/4
 @app.route('/tag_content_item', methods=['POST'])
 def tag_content_item():
+    if 'email' not in session:
+        return 'User not logged in'
     current_user = session['email']
     tagee_email = request.form['tagee_email']
     item_id = request.form['item_id']
@@ -124,6 +132,8 @@ def tag_content_item():
 # Tested WORKING on 12/4
 @app.route('/add_friend', methods=['POST'])
 def add_friend():
+    if 'email' not in session:
+        return 'User not logged in'
     owner_email = session['email']
     fg_name = request.form['fg_name']
     friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
@@ -143,6 +153,8 @@ def profile_info():
 # Tested WORKING on 12/4
 @app.route('/get_saved_posts')
 def get_saved_posts():
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
     page = request.form.get('page',1)
     results_per_page = request.form.get('results_per_page',10)
@@ -153,6 +165,8 @@ def get_saved_posts():
 # Tested WORKING on 12/4
 @app.route('/save_post', methods=['POST'])
 def save_post():
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
     item_id = request.form['item_id']
     helpers.save_post(email, item_id)
@@ -162,6 +176,8 @@ def save_post():
 # Tested WORKING on 12/4
 @app.route('/unsave_post', methods=['POST'])
 def unsave_post():
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
     item_id = request.form['item_id']
     helpers.unsave_post(email, item_id)
@@ -171,6 +187,8 @@ def unsave_post():
 # Tested WORKING on 12/4
 @app.route('/post_comment', methods=['POST'])
 def post_comment():
+    if 'email' not in session:
+        return 'User not logged in'
     email = session['email']
     item_id = request.form['item_id']
     comment = request.form['comment']

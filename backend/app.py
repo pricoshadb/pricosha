@@ -91,7 +91,7 @@ def modify_proposed_tag():
 # Tested WORKING on 12/4
 @app.route('/post_content_item', methods=['POST'])
 def post_content_item():
-    if not session['email']:
+    if 'email' not in session:
         return jsonify('User not logged in')
     email = session['email']
     item_name = request.form['item_name']

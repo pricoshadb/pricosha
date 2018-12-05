@@ -23,8 +23,8 @@ def index():
 # Tested WORKING on 12/4
 @app.route('/public_content/', methods=['GET', 'POST'])
 def public_content():
-    page = int(request.args.get('page',1))
-    results_per_page = int(request.args.get('results_per_page',10))
+    page = request.form.get('page',1)
+    results_per_page = request.form.get('results_per_page',10)
     content = helpers.get_public_content(page=page,results_per_page=results_per_page)
     return jsonify(content)
 
@@ -121,14 +121,15 @@ def tag_content_item():
 
 
 # 7. Adds friend to friendgroup that person owns
+# Tested WORKING on 12/4
 @app.route('/add_friend', methods=['POST'])
 def add_friend():
     owner_email = session['email']
     fg_name = request.form['fg_name']
     friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
 
-    helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
-    return 'ok'
+    return jsonify(helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname))
+
 
 
 # Optional feature 2: Profile pages

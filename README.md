@@ -3,7 +3,7 @@ CS 3083 Intro to Databases Project
 
 
 ## Live demo: <a href='https://pricosha.drew.hu' target="_blank">https://pricosha.drew.hu</a>
-## API: <a href='https://api.pricosha.drew.hu' target='_blank'>https://api.pricosha.drew.hu</a>
+## API: <a href='https://pricoshaapi.drew.hu' target='_blank'>https://pricoshaapi.drew.hu</a>
 ## Todo
 * Login
 * Post content items

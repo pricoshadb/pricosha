@@ -5,12 +5,20 @@
         fixed
         app>
       <v-list dense>
-        <v-list-tile @click="drawer=false;content_source='/public_content'">
+        <v-list-tile @click="drawer=false;content_source='public'">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Home</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="drawer=false;content_source='shared'">
+          <v-list-tile-action>
+            <v-icon>share</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Shared Content</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
@@ -68,7 +76,7 @@
       return {
         login_form: null,
         drawer: null,
-        content_source: '',
+        content_source: 'public',
         logged_in: false,
       }
     }

@@ -7,7 +7,7 @@
         </v-btn>
       </v-layout>
     </v-card>
-    <!-- <CustomPost v-if='create_new==true'></CustomPost> -->
+    <CustomPost v-if='create_new==true'></CustomPost>
     <Post
     v-for="item, index in content"
     :key="item.item_id"
@@ -26,7 +26,7 @@ export default {
   props: {
     src: {
       type: String,
-      default: '',
+      default: 'public',
     }
   },
   components: {
@@ -47,16 +47,10 @@ export default {
         })
     },
     updatePosts() {
-      if (this.src)
-        pricosha.getPosts(this.src).then(
-          response => {
-            this.content = response.data;
-          });
-      else
-        pricosha.getPublicPosts().then(
-          response => {
-            this.content = response.data;
-          });
+      pricosha.getPosts(this.src).then(
+        response => {
+          this.content = response.data;
+        });
     }
   },
   created() {

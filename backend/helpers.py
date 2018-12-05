@@ -64,11 +64,19 @@ def get_login(email, password):
     c.execute(sql, (email,))
     person = c.fetchone()
 
-    # Check that person exists
-    if person is None:
-        return 'Email does not exist'
-
     # Check password and log user in if success
+    if person is None:
+<<<<<<< HEAD
+        return 'Email does not exist'
+=======
+        c = conn.cursor()
+        sql = '''INSERT INTO 
+                  person(email, password_hash)
+                  VALUES (%s,%s,%s,%s)'''
+        c.execute(sql, (email, hashlib.sha256(password.encode('utf8')).hexdigest(), email.split('@')[0], ''))
+        conn.commit()
+>>>>>>> eed529d04ee8e091005876f41938697fb5b94289
+
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
         # Log the user in and set session variables
         return {
@@ -77,8 +85,12 @@ def get_login(email, password):
             'last_name': person['last_name'],
             'avatar': person['avatar']
         }
+<<<<<<< HEAD
     else:
         return 'Incorrect password'
+=======
+    return False
+>>>>>>> eed529d04ee8e091005876f41938697fb5b94289
 
 
 # 3. Get content shared with email

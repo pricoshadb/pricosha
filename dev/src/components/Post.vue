@@ -1,10 +1,10 @@
 <template>
   <v-card>
     <v-layout row>
-        <v-img
-          aspect-ratio='1'
-          :src="item.file_path">
-        </v-img>
+      <v-img
+        aspect-ratio='1'
+        :src="item.file_path">
+      </v-img>
       <v-layout col>
         <v-card-title class="pt-1 pb-0">
           <div>

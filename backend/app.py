@@ -1,4 +1,4 @@
-from flask import Flask, session, request, jsonify, make_response
+from flask import Flask, session, request, jsonify, make_response, redirect
 from flask_cors import CORS
 import helpers
 
@@ -13,23 +13,14 @@ CORS(app, resources={r"/*": {"origins": '*'}})
 
 
 # Test route
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return jsonify('ok')
 
 
 # 1. View public content posted in the last 24 hours
+# 3. View shared content items and info about them
 # + Optional feature 5: Paginated results
-@app.route('/public_content/', methods=['GET', 'POST'])
-def public_content():
-    page = int(request.args.get('page',1))
-    results_per_page = int(request.args.get('results_per_page',10))
-    content = helpers.get_public_content(page=page,results_per_page=results_per_page)
-    return jsonify(content)
-
-
-# 2. Login - POST email and password
-# + Optional feature 1: User avatar. Avatar is url to static image. Avatars are public so no need to make private
 @app.route('/login/', methods=['POST'])
 def login():
     # Get info from request
@@ -48,22 +39,27 @@ def login():
         return jsonify('login failed')
 
 
+# 2. Login - POST email and password
+@app.route('/posts/<channel>', methods=['GET', 'POST'])
+def get_posts(channel):
+    page = int(request.args.get('page', 1))
+    results_per_page = int(request.args.get('results_per_page', 10))
+    if channel == 'shared':
+        email = session['email']
+        content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
+    elif channel == 'public':
+        content = helpers.get_public_content(page=page, results_per_page=results_per_page)
+    else:
+        return redirect('/posts/public')
+    return jsonify(content)
+# + Optional feature 1: User avatar. Avatar is url to static image. Avatars are public so no need to make private
+
+
 @app.route('/logout/')
 def logout():
     # remove the username from the session if it's there
     session.pop('email', None)
     return jsonify('logged out')
-
-
-# 3. View shared content items and info about them
-# + Optional feature 5: Paginated results
-@app.route('/get_shared_content')
-def get_shared_content():
-    email = session['email']
-    page = int(request.args.get('page',1))
-    results_per_page = int(request.args.get('results_per_page',10))
-    content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
-    return jsonify(content)
 
 
 # 4. Manage tags
@@ -73,6 +69,7 @@ def get_proposed_tags():
     email = session['email']
     proposed_tags = helpers.get_proposed_tags(email)
     return jsonify(proposed_tags)
+
 
 # 4b. Modify proposed tag
 @app.route('/modify_proposed_tag', methods=['POST'])
@@ -137,6 +134,7 @@ def get_saved_posts():
 @app.route('/post_comment')
 def post_comment():
     pass
+
 
 @app.route("/img/<path:path>")
 def images(path):

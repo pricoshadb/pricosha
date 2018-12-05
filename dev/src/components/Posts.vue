@@ -26,7 +26,7 @@ export default {
   props: {
     src: {
       type: String,
-      default: '',
+      default: 'public',
     }
   },
   components: {
@@ -47,16 +47,10 @@ export default {
         })
     },
     updatePosts() {
-      if (this.src)
-        pricosha.getPosts(this.src).then(
-          response => {
-            this.content = response.data;
-          });
-      else
-        pricosha.getPublicPosts().then(
-          response => {
-            this.content = response.data;
-          });
+      pricosha.getPosts(this.src).then(
+        response => {
+          this.content = response.data;
+        });
     }
   },
   created() {

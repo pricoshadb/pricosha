@@ -95,6 +95,24 @@ def get_shared_content(email, page=1, results_per_page=10):
 
 
 # 4. Manage tags
+# 4a. Get proposed tags
+def get_proposed_tags(email):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''SELECT * FROM Tag WHERE email_tagged=%s AND status=False'''
+    c.execute(sql, (email,))
+    tags = c.fetchall()
+    return tags
+
+
+def modify_proposed_tag(email_tagger, email_tagged, item_id, decision):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    if decision == 'no decision':
+        return "No decision made"
+    if decision == 'accept':
+        sql = '''UPDATE Tag SET status=True WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
+        c.execute(sql, (email_tagger, email_tagged, item_id))
+        conn.commit()
+
 
 # 5. Post a content item
 def create_content_item(email, item_name, is_pub, file_path):
@@ -164,7 +182,7 @@ def get_saved_posts(email, page, results_per_page):
               ON Saved.item_id = ContentItem.item_id 
               WHERE Saved.email=%s
               ORDER BY post_time DESC LIMIT %s,%s'''
-    start = (page-1) * results_per_page
-    c.execute(sql, (email,start,results_per_page))
+    start = (page - 1) * results_per_page
+    c.execute(sql, (email, start, results_per_page))
     saved_posts = c.fetchall()
     return saved_posts

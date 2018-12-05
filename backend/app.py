@@ -67,16 +67,21 @@ def get_shared_content():
 
 
 # 4. Manage tags
-# 4a. Get proposed tags
+# 4a. Get proposed tags e.g. where tagee is user and status is false
 @app.route('/get_proposed_tags')
 def get_proposed_tags():
     email = session['email']
     proposed_tags = helpers.get_proposed_tags(email)
+    return jsonify(proposed_tags)
 
 # 4b. Modify proposed tag
-@app.route('/modify_proposed_tag')
+@app.route('/modify_proposed_tag', methods=['POST'])
 def modify_proposed_tag():
-    pass
+    email_tagger = request.form['email_tagger']
+    email_tagged = session['email']
+    item_id = request.form['item_id']
+    decision = request.form['decision']
+    helpers.modify_proposed_tag(email_tagger, email_tagged, item_id, decision)
 
 
 # 5. Post a content item

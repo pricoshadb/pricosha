@@ -15,7 +15,7 @@ def can_see(email, item_id):
     sql = '''select count(*) AS count from ContentItem 
                 NATURAL JOIN Share 
                 NATURAL JOIN Belong 
-                WHERE email_member=%s AND item_id=%s'''
+                WHERE (email_member=%s OR is_pub=True) AND item_id=%s'''
     c.execute(sql, (email, item_id))
     result = c.fetchone()
     return result['count'] > 0
@@ -60,7 +60,7 @@ def get_login(email, password):
     c = conn.cursor(pymysql.cursors.DictCursor)
 
     # Check if username and password hash exist in our database
-    sql = '''SELECT first_name, last_name, password_hash FROM Person WHERE email=%s'''
+    sql = '''SELECT * FROM Person WHERE email=%s'''
     c.execute(sql, (email,))
     person = c.fetchone()
 
@@ -108,8 +108,13 @@ def modify_proposed_tag(email_tagger, email_tagged, item_id, decision):
     c = conn.cursor(pymysql.cursors.DictCursor)
     if decision == 'no decision':
         return "No decision made"
-    if decision == 'accept':
-        sql = '''UPDATE Tag SET status=True WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
+    elif decision == 'accept':
+        sql = '''UPDATE Tag SET status=1 WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
+        c.execute(sql, (email_tagger, email_tagged, item_id))
+        conn.commit()
+        return
+    elif decision == 'decline':
+        sql = '''DELETE FROM Tag WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
         c.execute(sql, (email_tagger, email_tagged, item_id))
         conn.commit()
 
@@ -186,3 +191,33 @@ def get_saved_posts(email, page, results_per_page):
     c.execute(sql, (email, start, results_per_page))
     saved_posts = c.fetchall()
     return saved_posts
+
+
+def save_post(email, item_id):
+    if not can_see(email, item_id):
+        return 'User is not allowed to save this content'
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''INSERT INTO Saved(email, save_time, item_id)
+              VALUES (%s,NOW(),%s)'''
+    c.execute(sql, (email, item_id))
+    conn.commit()
+
+
+def unsave_post(email, item_id):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''DELETE FROM Saved WHERE email=%s AND item_id=%s'''
+    c.execute(sql, (email, item_id))
+    conn.commit()
+
+
+# Optional feature 6. Post comments
+def post_comment(email, item_id, comment):
+    if not can_see(email, item_id):
+        return 'User is not allowed to comment on this content'
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''INSERT INTO Comments(item_id, email, post_time, content) 
+              VALUES (%s, %s, NOW(), %s)'''
+    c.execute(sql, (item_id, email, comment))
+    conn.commit()
+    return True
+

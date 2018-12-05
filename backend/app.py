@@ -66,6 +66,7 @@ def logout():
 
 # 4. Manage tags
 # 4a. Get proposed tags e.g. where tagee is user and status is false
+# Tested WORKING on 12/4
 @app.route('/get_proposed_tags')
 def get_proposed_tags():
     email = session['email']
@@ -74,6 +75,7 @@ def get_proposed_tags():
 
 
 # 4b. Modify proposed tag
+# Tested WORKING on 12/4
 @app.route('/modify_proposed_tag', methods=['POST'])
 def modify_proposed_tag():
     email_tagger = request.form['email_tagger']
@@ -81,11 +83,13 @@ def modify_proposed_tag():
     item_id = request.form['item_id']
     decision = request.form['decision']
     helpers.modify_proposed_tag(email_tagger, email_tagged, item_id, decision)
+    return 'ok'
 
 
 # 5. Post a content item
 # Optional feature 4: Post image content
-@app.route('/post_content_item')
+# Tested WORKING on 12/4
+@app.route('/post_content_item', methods=['POST'])
 def post_content_item():
     if not session['email']:
         return jsonify('User not logged in')
@@ -93,26 +97,31 @@ def post_content_item():
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
     image_content = request.form.get('image_content', None)
-    helpers.create_content_item(email=email,item_name=item_name,is_pub=is_pub,file_path=image_content)
+    helpers.create_content_item(email,item_name,is_pub,image_content)
+    return 'ok'
 
 
 # 6. Tag a content item
+# Tested WORKING on 12/4
 @app.route('/tag_content_item', methods=['POST'])
 def tag_content_item():
     current_user = session['email']
     tagee_email = request.form['tagee_email']
     item_id = request.form['item_id']
     helpers.tag_item(current_user,tagee_email,item_id)
+    return 'ok'
 
 
 # 7. Adds friend to friendgroup that person owns
+# Tested WORKING on 12/4
 @app.route('/add_friend', methods=['POST'])
 def add_friend():
     owner_email = session['email']
     fg_name = request.form['fg_name']
     friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
 
-    helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
+    return jsonify(helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname))
+
 
 
 # Optional feature 2: Profile pages
@@ -123,19 +132,42 @@ def profile_info():
 
 # Optional feature 3: Saved posts. Gets post that user has saved
 # + Optional feature 5: Paginated results
+# Tested WORKING on 12/4
 @app.route('/get_saved_posts')
 def get_saved_posts():
     email = session['email']
-    page = int(request.args.get('page',1))
-    results_per_page = int(request.args.get('results_per_page',10))
+    page = request.form.get('page',1)
+    results_per_page = request.form.get('results_per_page',10)
     saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
     return jsonify(saved_posts)
 
 
+# Tested WORKING on 12/4
+@app.route('/save_post', methods=['POST'])
+def save_post():
+    email = session['email']
+    item_id = request.form['item_id']
+    helpers.save_post(email, item_id)
+    return 'ok'
+
+
+# Tested WORKING on 12/4
+@app.route('/unsave_post', methods=['POST'])
+def unsave_post():
+    email = session['email']
+    item_id = request.form['item_id']
+    helpers.unsave_post(email, item_id)
+    return 'ok'
+
 # Optional feature 6: Add comments
-@app.route('/post_comment')
+# Tested WORKING on 12/4
+@app.route('/post_comment', methods=['POST'])
 def post_comment():
-    pass
+    email = session['email']
+    item_id = request.form['item_id']
+    comment = request.form['comment']
+    helpers.post_comment(email, item_id, comment)
+    return 'ok'
 
 
 @app.route("/img/<path:path>")

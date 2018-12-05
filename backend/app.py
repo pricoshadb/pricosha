@@ -42,11 +42,13 @@ def login():
 # 2. Login - POST email and password
 @app.route('/posts/<channel>', methods=['GET', 'POST'])
 def get_posts(channel):
-    page = int(request.args.get('page', 1))
-    results_per_page = int(request.args.get('results_per_page', 10))
+    page = int(request.form.get('page', 1))
+    results_per_page = int(request.form.get('results_per_page', 10))
     if channel == 'shared':
+        if 'email' not in session:
+            return 'Unauthorized'
         email = session['email']
-        content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
+        content = helpers.get_shared_content(email, page, results_per_page)
     elif channel == 'public':
         content = helpers.get_public_content(page=page, results_per_page=results_per_page)
     else:

@@ -1,6 +1,10 @@
-# pricosha
-CS 3083 Intro to Databases Project
+# PriCoSha
+CS 3083 Intro to Databases Project  
 
+Maxwell Reddy **mcr517**  
+Lucas Pollice **lp1935**  
+Khoa Nguyen   **kdn263**  
+Andrew Hu     **ah4358**  
 
 ## Live demo: <a href='https://pricosha.drew.hu' target="_blank">https://pricosha.drew.hu</a>
 ## API: <a href='https://pricoshaapi.drew.hu' target='_blank'>https://pricoshaapi.drew.hu</a>
@@ -11,10 +15,12 @@ CS 3083 Intro to Databases Project
 * propose to tag content items with e-mails of other users, provided the content items are visible to both the user (the tagger) and the person being tagged (the taggee)
 * manage tag proposals
 
-## Users
-| user_id       | user_name     | email | password_hash |
-| ------------- | ------------- | ----- | ------------- |
-| 1     | bill       |  bill@example.com | f0e4c2f76c... |
+## Test accounds
+| email     | name | password |
+| ------------- | ----- | ------------- |
+| AA@nyu.edu    |  Ann Anderson | AA |
+|AA2@nyu.edu|Ann Anderson|AA2|
+
 
 
 ## Install dependencies

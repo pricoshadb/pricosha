@@ -173,9 +173,28 @@ def add_friend():
 
 
 # Optional feature 2: Profile pages
+# Profile info is always public
 @app.route('/get_profile_info')
-def profile_info():
-    pass
+def get_profile_info():
+    email = request.form.get('email', session['email'])
+    profile_info = helpers.get_profile_info(email)
+    return jsonify(profile_info)
+
+
+@app.route('/set_profile_bio')
+def set_profile_bio():
+    email = session['email']
+    new_bio = request.form.get('new_bio')
+    profile_info = helpers.set_profile_bio(email,new_bio)
+    return jsonify(profile_info)
+
+
+@app.route('/set_profile_avatar')
+def set_profile_avatar():
+    email = session['email']
+    new_avatar = request.form.get('new_avatar')
+    profile_info = helpers.set_profile_avatar(email, new_avatar)
+    return jsonify(profile_info)
 
 
 # Optional feature 3: Saved posts. Gets post that user has saved

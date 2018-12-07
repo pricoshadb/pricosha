@@ -228,6 +228,28 @@ def add_friend(owner_email, fg_name, friend_fname, friend_lname):
     return 'Successfully added friend'
 
 
+# Optional feature 2: Profile pages
+def get_profile_info(email):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''SELECT avatar, bio FROM Person WHERE email=%s'''
+    c.execute(sql, (email,))
+    profile = c.fetchone()
+    return profile
+
+def set_profile_bio(email, bio):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''UPDATE Person SET bio=%s WHERE email=%s'''
+    c.execute(sql, (bio, email))
+    conn.commit()
+    return True
+
+def set_profile_avatar(email, avatar):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''UPDATE Person SET avatar=%s WHERE email=%s'''
+    c.execute(sql, (avatar, email))
+    conn.commit()
+    return True
+
 # Optional feature 3: Saved posts. Returns post saved by user
 def get_saved_posts(email, page, results_per_page):
     c = conn.cursor(pymysql.cursors.DictCursor)

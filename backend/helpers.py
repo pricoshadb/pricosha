@@ -290,3 +290,12 @@ def post_comment(email, item_id, comment):
     c.execute(sql, (item_id, email, comment))
     conn.commit()
     return True
+
+def get_comments(email, item_id):
+    if not can_see(email, item_id):
+        return 'User is not allowed to see this post'
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''SELECT * FROM Comments WHERE item_id=%s'''
+    c.execute(sql, (item_id,))
+    comments = c.fetchall()
+    return comments

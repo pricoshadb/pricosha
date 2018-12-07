@@ -1,4 +1,4 @@
-from flask import Flask, session, request, jsonify, make_response, render_template
+from flask import Flask, session, request, jsonify, make_response, render_template, send_file
 from flask_cors import CORS
 import helpers
 
@@ -26,6 +26,10 @@ CORS(app, resources={r"/*": {"origins": '*'}})
 @app.route('/')
 def index():
     return render_template('api.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_file('img/favicon.ico')
 
 
 # 1. View public content posted in the last 24 hours
@@ -244,9 +248,29 @@ def post_comment():
     helpers.post_comment(email, item_id, comment)
     return 'ok'
 
+
+@app.route('/get_comments')
+def get_comments():
+    email = session['email']
+    item_id = request.form['item_id']
+    comments = helpers.get_comments(email, item_id)
+    return jsonify(comments)
+
+
+# deletes comment if user
+@app.route('/delete_comment', methods=['POST'])
+def delete_comment():
+    email = session['email']
+    item_id = request.form['item_id']
+    comment_id = request.form['comment_id']
+
+
 @app.route("/img/<path:path>")
 def images(path):
+    import os.path
     full_path = "./img/" + path
+    if not os.path.exists(full_path):
+        return jsonify('Image not found on this server')
     b = open(full_path, 'rb').read()
     resp = make_response(b)
     resp.content_type = "image/jpeg"

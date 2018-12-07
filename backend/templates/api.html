@@ -4,6 +4,7 @@
   <title>PriCoSha API Documentation</title>
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="shortcut icon" href="/favicon.ico">
   <style>
 
 
@@ -62,17 +63,43 @@
   </div>
   <h2><strong>Table of Contents</strong></h2>
   <ul>
+    <li><code>Use case 1: View public content</code></li>
     <li><code>GET</code> <a href="#public_content">/public_content</a></li>
+    <li><br/></li>
+    <li><code>Use case 2: Login</code></li>
     <li><code>POST</code> <a href="#login">/login</a></li>
     <li><code>POST</code> <a href="#logout">/logout</a></li>
+    <li><br/></li>
+    <li><code>Use case 3: View shared content items and info about them</code></li>
     <li><code>GET</code> <a href="#get_shared_content">/get_shared_content</a></li>
+    <li><br/></li>
+    <li><code>Use case 4: Manage tags</code></li>
     <li><code>GET</code> <a href="#get_proposed_tags">/get_proposed_tags</a></li>
     <li><code>POST</code> <a href="#modify_proposed_tag">/modify_proposed_tag</a></li>
+    <li><br/></li>
+    <li><code>Use case 5: Post a content item</code></li>
     <li><code>POST</code> <a href="#post_content_item">/post_content_item</a></li>
+    <li><br/></li>
+    <li><code>Use case 6: Tag a content item</code></li>
     <li><code>POST</code> <a href="#tag_content_item">/tag_content_item</a></li>
+    <li><br/></li>
+    <li><code>Use case 7: Add friend</code></li>
     <li><code>POST</code> <a href="#add_friend">/add_friend</a></li>
-    <li></li>
-    <li></li>
+    <li><br/></li>
+    <li><code>Optional features</code></li>
+    <li>Profile pages</li>
+    <li><code>GET</code> <a href="#get_profile_info">/get_profile_info</a></li>
+    <li><code>POST</code> <a href="#set_profile_info">/set_profile_info</a></li>
+    <li><code>POST</code> <a href="#set_profile_avatar">/set_profile_avatar</a></li>
+    <li>Save posts</li>
+    <li><code>GET</code> <a href="#get_saved_posts">/get_saved_posts</a></li>
+    <li><code>POST</code> <a href="#save_post">/save_post</a></li>
+    <li><code>POST</code> <a href="#unsave_post">/unsave_post</a></li>
+    <li>Add comments</li>
+    <li><code>POST</code> <a href="#post_comment">/post_comment</a></li>
+    <li>Paginated results</li>
+    <li>image content</li>
+
   </ul>
   <h2><strong>Methods</strong></h2>
   <hr>
@@ -228,6 +255,9 @@
       <p>Example response:</p>
       <pre class="code">{'Successfully added Fred Fox to friend group Family'}</pre>
     </li>
+    <li id="get_profile_info"></li>
+    <li id="set_profile_info"></li>
+    <li id="set_profile_avatar"></li>
 
 
   </ul>

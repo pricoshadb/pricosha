@@ -1,9 +1,13 @@
-CREATE TABLE IF NOT EXISTS  `Person`(
+DROP DATABASE IF EXISTS pricosha;
+CREATE DATABASE pricosha;
+USE pricosha;
+CREATE TABLE IF NOT EXISTS `Person`(
    email VARCHAR(50) PRIMARY KEY,
    password_hash CHAR(64) NOT NULL,
    first_name VARCHAR(20) NOT NULL,
    last_name VARCHAR(20) NOT NULL,
-   avatar VARCHAR(256));
+   avatar VARCHAR(256),
+   bio VARCHAR(1024));
 CREATE TABLE IF NOT EXISTS  FriendGroup(
    fg_name VARCHAR(20),
    email VARCHAR(50),
@@ -18,6 +22,10 @@ CREATE TABLE IF NOT EXISTS  ContentItem(
    is_pub BOOL NOT NULL,
    file_path VARCHAR(128),
    FOREIGN KEY (email) REFERENCES Person(email) ON DELETE SET NULL);
+CREATE TABLE IF NOT EXISTS Files(
+    item_id INT,
+    file_name VARCHAR(256),
+    FOREIGN KEY(item_id) REFERENCES ContentItem(item_id) ON DELETE CASCADE);
 CREATE TABLE IF NOT EXISTS Comments(
     item_id INT NOT NULL,
     email VARCHAR(50),
@@ -63,4 +71,4 @@ CREATE TABLE IF NOT EXISTS Saved (
     save_time DATETIME NOT NULL,
     FOREIGN KEY (email) REFERENCES Person(email),
     FOREIGN KEY (item_id) REFERENCES ContentItem(item_id)
-)
+);

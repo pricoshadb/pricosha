@@ -21,6 +21,13 @@ def can_see(email, item_id):
     return result['cnt'] > 0
 
 
+def response(success, msg):
+    return {
+        'success': success,
+        'response': msg
+    }
+
+
 # 1. Gets public content from past 24 hours
 #    Also paginates results
 def get_public_content(page=1, results_per_page=10):
@@ -64,42 +71,39 @@ def get_login(email, password):
     c.execute(sql, (email,))
     person = c.fetchone()
 
-    # Check that person exists
     if person is None:
-        return {
-            'success': False,
-            'response': 'Email does not exist'
-        }
+        return response(False, 'Email does not exist')
 
     # Check password and log user in if success
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
         # Log the user in and set session variables
-        return {
-            'success': True,
-            'response': {
-                'email': email,
-                'first_name': person['first_name'],
-                'last_name': person['last_name'],
-                'avatar': person['avatar']
-            }
+        user_data = {
+            'email': email,
+            'first_name': person['first_name'],
+            'last_name': person['last_name'],
+            'avatar': person['avatar']
         }
+        return response(True, user_data)
     else:
-        return {
-            'success': False,
-            'response': 'Incorrect password'
-        }
+        return response(False, 'Incorrect password')
 
 
 def register(email, password, first_name, last_name):
     c = conn.cursor(pymysql.cursors.DictCursor)
+
+    # Check if user with email already exists
+    sql = '''SELECT COUNT(*) AS cnt FROM Person WHERE email=%s'''
+    c.execute(sql, (email,))
+    user_count = c.fetchone()
+    if user_count['cnt'] > 0:
+        return response(False, 'User with email already exists')
+
+    # Create new user
     sql = '''INSERT INTO Person(email, password_hash, first_name, last_name)
               VALUES (%s,SHA2(%s, 256), %s, %s)'''
     c.execute(sql, (email, password, first_name, last_name))
     conn.commit()
-    return {
-        'success': True,
-        'response': f'Successfully registered user {first_name} {last_name}'
-    }
+    return response(True, f'Successfully registered user {first_name} {last_name}')
 
 
 def reset_password(email, old_password, new_password):
@@ -108,10 +112,7 @@ def reset_password(email, old_password, new_password):
               WHERE password_hash=SHA2(%s,256) AND email=%s'''
     c.execute(sql, (new_password, old_password, email))
     conn.commit()
-    return {
-        'success': True,
-        'response': f'Successfully changed password for {email}'
-    }
+    return response(True,f'Successfully changed password for {email}')
 
 
 # 3. Get content shared with email
@@ -226,6 +227,13 @@ def add_friend(owner_email, fg_name, friend_fname, friend_lname):
     c.execute(sql, (owner_email, person[0]['email'], fg_name))
     conn.commit()
     return 'Successfully added friend'
+
+def unfriend(email_owner, email_member, fg_name):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''DELETE FROM Belong WHERE email_owner=%s AND email_member=%s AND fg_name=%s'''
+    c.execute(sql, (email_owner, email_member, fg_name))
+    conn.commit()
+    return response(True, 'Removed friend from fg')
 
 
 # Optional feature 2: Profile pages

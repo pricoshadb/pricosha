@@ -8,7 +8,10 @@
       <v-layout col>
         <v-card-title class="pt-1 pb-0">
           <div>
-            <h3 class="headline mb-0">{{item.item_name}}</h3>
+            <v-layout row>
+              <h3 class="headline mb-0">{{item.item_name}}</h3>
+              <EmojiBar></EmojiBar>
+            </v-layout>
             <span>{{item.email}}</span>
             <v-layout row  v-if='item.tagged'>
               <!-- <span v-if='item.tagged'> &mdash; </span> -->
@@ -22,27 +25,37 @@
             </v-layout>
           </div>
         </v-card-title>
-        <v-spacer></v-spacer>
-        <v-card-actions>
-          <v-btn flat icon color="primary">
-            <v-icon>share</v-icon>
-          </v-btn>
-          <v-btn flat icon color="primary">
-            <v-icon>chat</v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-layout>
-
+      <v-spacer></v-spacer>
+      <v-card-actions>
+        <v-btn flat icon color="yellow"
+          @click='toggleSave()'>
+          <v-icon v-if='saved'>bookmark</v-icon>
+          <v-icon v-else>bookmark_border</v-icon>
+        </v-btn>
+        <v-btn flat icon>
+          <v-icon>share</v-icon>
+        </v-btn>
+        <v-btn flat icon color="primary">
+          <v-icon>chat</v-icon>
+        </v-btn>
+      </v-card-actions>
     </v-layout>
   </v-card>
 </template>
 
 <script>
+import EmojiBar from './EmojiBar.vue'
+
 export default {
   name: 'Post',
+  components: {
+    EmojiBar,
+  },
   data() {
     return {
       tag_value: '',
+      saved: false,
     }
   },
   props: {
@@ -56,6 +69,13 @@ export default {
       pricosha.setTagged(this.item, this.tag_value)
       this.tag_value=''
       this.$emit('dirty')
+    },
+    toggleSave() {
+      this.saved = !this.saved
+      if (this.saved)
+        pricosha.setSaved(this.item_id)
+      else
+        pricosha.setUnsaved(this.item_id)
     }
   }
 }

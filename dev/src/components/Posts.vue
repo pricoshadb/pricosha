@@ -7,7 +7,8 @@
         </v-btn>
       </v-layout>
     </v-card>
-    <CustomPost v-if='create_new==true'></CustomPost>
+    <CustomPost v-if='create_new==true'
+    @submit='create_new=false;updatePosts()'></CustomPost>
     <Post
     v-for="item, index in content"
     :key="item.item_id"
@@ -35,7 +36,13 @@ export default {
   },
   data() {
     return {
-      content: [],
+      content: [{
+        tagged: ['email1@gmail.com', 'email2@gmail.com'],
+        email: 'author@gmail.com',
+        item_name: 'Title1',
+        file_path: 'https://i.redd.it/nb6w56a10x221.jpg',
+
+      }],
       create_new: false
     }
   },

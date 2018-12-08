@@ -58,7 +58,9 @@ export default {
         data.append('item_name', this.item_name)
         data.append('is_pub', this.is_pub)
         data.append('image_content', this.image_content)
-        pricosha.setPost(data)
+        pricosha.setPost(data).then(response => {
+          this.$emit('submit')
+        })
       }
     }
   }

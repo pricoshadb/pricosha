@@ -62,7 +62,7 @@ def login():
         user = login_['response']
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
-        # session['avatar'] = user['avatar']
+        session['avatar'] = user['avatar']
         return jsonify(f"successfully logged in {session['first_name']} {session['last_name']}")
     else:
         return jsonify('login failed')

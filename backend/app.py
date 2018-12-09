@@ -1,6 +1,7 @@
 from flask import Flask, session, request, jsonify, make_response, render_template, send_file
 from flask_cors import CORS
-import helpers
+import helpers.helpers as helpers
+import os.path
 
 
 '''
@@ -17,6 +18,7 @@ app = Flask(__name__)
 
 # Set secret key for sessions
 app.secret_key = 'super secret key!98nu9f8u2f'
+app.config['UPLOAD_FOLDER'] = '/home/user/pricosha/backend/img'
 
 # Allow all clients to access our api
 CORS(app, resources={r"/*": {"origins": '*'}})
@@ -63,9 +65,9 @@ def login():
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
         session['avatar'] = user['avatar']
-        return jsonify(f"successfully logged in {session['first_name']} {session['last_name']}")
+        return jsonify(helpers.response(True, f"successfully logged in {session['first_name']} {session['last_name']}"))
     else:
-        return jsonify('login failed')
+        return jsonify(helpers.response(False, 'Login failed'))
 
 
 # Logs out user
@@ -148,8 +150,14 @@ def post_create():
     email = session['email']
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
-    image_content = request.form.get('image_content', None)
-    result = helpers.create_content_item(email,item_name,is_pub,image_content)
+    filepath=None
+    if 'file' in request.files:
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify('empty filename')
+        filepath = os.path.join('/home/user/pricosha/backend/img/', file.filename)
+        file.save(filepath)
+    result = helpers.create_content_item(email,item_name,is_pub,filepath)
     return jsonify(result)
 
 
@@ -175,8 +183,8 @@ def add_friend():
     owner_email = session['email']
     fg_name = request.form['fg_name']
     friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
-
-    return jsonify(helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname))
+    friend = helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
+    return jsonify(friend)
 
 @app.route('/unfriend', methods=['POST'])
 def remove_friend():
@@ -187,6 +195,17 @@ def remove_friend():
     fg_name = request.form['fg_name']
     unfriend = helpers.unfriend(email_owner, email_member, fg_name)
     return jsonify(unfriend)
+
+
+@app.route('/groups/create')
+def create_fg():
+    if 'email' not in session:
+        return 'User not logged in'
+    email_owner = session['email']
+    fg_name = request.form['fg_name']
+    description = request.form.get('description', None)
+    fg = helpers.create_fg(email_owner, fg_name, description)
+    return jsonify(fg)
 
 
 # Optional feature 2: Profile pages

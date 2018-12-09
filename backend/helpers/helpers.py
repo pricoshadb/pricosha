@@ -157,12 +157,16 @@ def modify_proposed_tag(email_tagger, email_tagged, item_id, decision):
 
 # 5. Post a content item
 def create_content_item(email, item_name, is_pub, file_path):
-    c = conn.cursor()
+    c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''INSERT INTO 
               ContentItem(email, post_time, item_name, is_pub, file_path)
               VALUES (%s,NOW(),%s,%s,%s)'''
     c.execute(sql, (email, item_name, is_pub, file_path))
+    sql = '''SELECT * FROM ContentItem WHERE item_id=(SELECT LAST_INSERT_ID())'''
+    c.execute(sql)
+    last_insert = c.fetchone()
     conn.commit()
+    return last_insert
 
 
 # 6. Tag a content item
@@ -234,6 +238,13 @@ def unfriend(email_owner, email_member, fg_name):
     c.execute(sql, (email_owner, email_member, fg_name))
     conn.commit()
     return response(True, 'Removed friend from fg')
+
+def create_fg(email_owner, fg_name, description):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''INSERT INTO FriendGroup(fg_name, email, description)
+              VALUES (%s,%s,%s)'''
+    c.execute(sql, (fg_name, email_owner, description))
+    conn.commit()
 
 
 # Optional feature 2: Profile pages

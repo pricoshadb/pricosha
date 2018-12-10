@@ -9,10 +9,12 @@
           <h3 class="headline mb-0">{{item.item_name}}</h3>
           <EmojiBar></EmojiBar>
         </v-layout>
-        <span>{{item.email}}</span>
+        <UserChip :email='item.email' color='primary' text-color='white'></UserChip>
         <v-layout row  v-if='item.tagged'>
           <!-- <span v-if='item.tagged'> &mdash; </span> -->
-          <v-subheader class='px-0'>{{item.tagged.join(", ")}}</v-subheader>
+          <v-subheader class='px-0' v-for='tag_email in item.tagged'>
+            <UserChip :email='tag_email'></UserChip>
+          </v-subheader>
           <v-text-field
           v-model='tag_value'
           label='+'
@@ -28,28 +30,32 @@
         <v-icon v-if='saved'>bookmark</v-icon>
         <v-icon v-else>bookmark_border</v-icon>
       </v-btn>
-      <v-btn flat icon @click='share_state=true'>
-        <v-icon>share</v-icon>
-        <v-card v-show='share_state' @native.blur='share_state=false' class='groups_picker'>
+      <v-menu>
+        <v-btn flat icon @click='share_state=true'
+        slot='activator'>
+          <v-icon>share</v-icon>
+        </v-btn>
+        <v-card>
           <v-select
             :items='group_names'
             label='groups'
             @input='sharePost($event)'>
           </v-select>
         </v-card>
-      </v-btn>
+      </v-menu>
       <v-btn flat icon color="primary"
       @click='show_comments=!show_comments'>
         <v-icon>chat</v-icon>
       </v-btn>
     </v-card-actions>
+    <v-divider></v-divider>
     <v-card-text v-show='show_comments'>
       <div class='commentdrop'>
         <v-card outline flat color='grey lighten-5'
         class='ma-1 textwrap'
         v-for='comment in comments' :key='comment.email'>
           <v-card-text class='pa-1'>
-            {{comment.email}}
+            <UserChip :email='comment.email'></UserChip>
             <br>
             {{comment.content}}
           </v-card-text>
@@ -66,11 +72,13 @@
 
 <script>
 import EmojiBar from './EmojiBar.vue'
+import UserChip from './UserChip.vue'
 
 export default {
   name: 'Post',
   components: {
     EmojiBar,
+    UserChip
   },
   data() {
     return {
@@ -105,10 +113,10 @@ export default {
       if (this.saved)
         pricosha.setSaved(this.item_id)
       else
-        pricosha.setUnsaved(this.item_id)
+        pricosha.removeSaved(this.item_id)
     },
-    sharePost(e) {
-      pricosha.setShared(this.item_id, e)
+    sharePost(group) {
+      pricosha.setShare(this.item_id, group)
     },
     comment() {
       pricosha.setComment(this.item.item_id, this.comment_value).then(response=> {
@@ -136,11 +144,11 @@ export default {
 .groups_picker  {
   width: 20rem;
   height: 30rem;
-  position: absolute
+  position: absolute;
 }
 .commentdrop {
-  height: 30em;
-  overflow-y: scroll;
+  max-height: 30em;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 </style>

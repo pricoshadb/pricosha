@@ -50,12 +50,17 @@ window.pricosha = {
       console.log(response)
     })
   },
-  getUser(email) {
-    return axios.get('/user', {
+  getProfile(email) {
+    return axios.get('/profile', {
       args: {
         email: email
       }
     }).then(function(response){
+      console.log(response)
+    })
+  },
+  getFriends() {
+    return axios.get('/friends').then(function(response) {
       console.log(response)
     })
   },

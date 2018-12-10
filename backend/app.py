@@ -212,6 +212,14 @@ def create_fg():
 # Profile info is always public
 @app.route('/get_profile_info')
 def get_profile_info():
+    # return:
+    # user: {
+    #   bio: '',
+    #   avatar: '',
+    #   first_name: '',
+    #   last_name: '',
+    #   friend: false,
+    # }
     email = request.form.get('email', session['email'])
     profile_info = helpers.get_profile_info(email)
     return jsonify(profile_info)

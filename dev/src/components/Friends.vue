@@ -9,8 +9,7 @@
         v-for="friend, index in friends"
         :key="friend.email">
           <v-list-tile-content>
-            <v-list-tile-title>{{friend.first_name}} {{friend.last_name}}</v-list-tile-title>
-            <v-list-tile-sub-title>{{friend.email}}</v-list-tile-sub-title>
+            {{friend.email}}
           </v-list-tile-content>
           <v-btn round outline color="error" dark
           @click='friends.splice(index,1);pricosha.removeFriend(friend.email)'>unfriend</v-btn>
@@ -32,12 +31,15 @@
       return {
         friends: [
           {
-            email: 'example@gmail.com',
-            first_name: 'Lucas',
-            last_name: 'OhZia'
+            email: 'example@gmail.com'
           }
         ]
       }
+    },
+    created() {
+      pricosha.getFriends().then(response => {
+        this.friends = response.data
+      })
     }
   }
 </script>

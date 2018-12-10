@@ -146,6 +146,25 @@ window.pricosha = {
       console.log(response)
     })
   },
+  getComments(post_id) {
+    return axios.get('/comments', {
+      data: {
+        post_id: post_id
+      }
+    }).then(function(response){
+      console.log(response)
+    })
+  },
+  setComment(post_id, content) {
+    return axios.post('/comment', {
+      data: {
+        post_id: post_id,
+        content: content
+      }
+    }).then(function(response){
+      console.log(response)
+    })
+  },
   removeSaved(post_id) {
     return axios.post('/post/unsave', {
       data: {
@@ -171,7 +190,7 @@ window.pricosha = {
         email: email,
         password: password
       }
-    }).then(function(response){
+    }).then(response => {
       console.log(response)
     })
   },

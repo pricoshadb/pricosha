@@ -107,7 +107,7 @@ def get_shared_content():
     if 'email' not in session:
         return 'User not logged in'
     email = session['email']
-    page = request.form.get('page',1)
+    page = request.form.get('page', 1)
     results_per_page = request.form.get('results_per_page',10)
     content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
     return jsonify(content)

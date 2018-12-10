@@ -16,6 +16,19 @@
     :group_names='group_names'
     @dirty='updatePost(item.item_id, index)'>
     </Post>
+    <v-layout row justify-center align-center>
+      <v-btn fab small depressed
+      @click='page--'>
+        <v-icon>chevron_left</v-icon>
+      </v-btn>
+      <v-btn fab depressed style="pointer-events: none;">
+        {{page}}
+      </v-btn>
+      <v-btn fab small depressed
+      @click='page++'>
+        <v-icon>chevron_right</v-icon>
+      </v-btn>
+    </v-layout>
   </v-container>
 </template>
 
@@ -43,6 +56,7 @@ export default {
         item_name: 'Title1',
         file_path: 'https://i.redd.it/nb6w56a10x221.jpg',
       }],
+      page: 1,
       group_names: [],
       create_new: false
     }
@@ -55,7 +69,7 @@ export default {
         })
     },
     updatePosts() {
-      pricosha.getPosts(this.src).then(
+      pricosha.getPosts(this.src, this.page).then(
         response => {
           this.content = response.data;
         });
@@ -69,8 +83,12 @@ export default {
   },
   watch: {
     src: {
-      immediate: true,
       handler (val, old) {
+        this.updatePosts()
+      }
+    },
+    page: {
+      handler() {
         this.updatePosts()
       }
     }

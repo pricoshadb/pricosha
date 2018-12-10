@@ -8,6 +8,8 @@ window.pricosha = {
         page: page,
         results_per_page: results_per_page,
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setTagged(post_id) {
@@ -15,6 +17,8 @@ window.pricosha = {
       data: {
         post_id: post_id
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   getProposedTags() {
@@ -23,13 +27,18 @@ window.pricosha = {
         page: page,
         results_per_page: results_per_page,
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
-  removeProposedTag(post_id) {
-    return axios.post('/tags/deny', {
+  modifyProposedTag(item_id, decision) {
+    return axios.post('/tags/modify', {
       data: {
-        post_id: post_id
+        item_id: item_id,
+        decision: decision
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   getPost(item_id) {
@@ -37,6 +46,8 @@ window.pricosha = {
       args: {
         item_id: item_id
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   getUser(email) {
@@ -44,6 +55,8 @@ window.pricosha = {
       args: {
         email: email
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setFriend(email) {
@@ -51,6 +64,8 @@ window.pricosha = {
       args: {
         email: email
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   removeFriend(email) {
@@ -58,6 +73,8 @@ window.pricosha = {
       args: {
         email: email
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setPost(formdata) { // Must be form for file upload
@@ -68,6 +85,8 @@ window.pricosha = {
       args: {
         names_only: names_only
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setGroup(fg_name) {
@@ -75,6 +94,8 @@ window.pricosha = {
       args: {
         fg_name: fg_name
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   removeGroup(fg_name) {
@@ -82,6 +103,8 @@ window.pricosha = {
       args: {
         fg_name: fg_name
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setGroupMember(fg_name, email) {
@@ -90,6 +113,8 @@ window.pricosha = {
         fg_name: fg_name,
         email: email
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   removeGroupMember(fg_name, email) {
@@ -98,6 +123,8 @@ window.pricosha = {
         fg_name: fg_name,
         email: email
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setShare(item_id, fg_name) {
@@ -106,6 +133,8 @@ window.pricosha = {
         item_id: item_id,
         fg_name: fg_name
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   setSaved(post_id) {
@@ -113,6 +142,8 @@ window.pricosha = {
       data: {
         post_id: post_id
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   removeSaved(post_id) {
@@ -120,6 +151,8 @@ window.pricosha = {
       data: {
         post_id: post_id
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   register(email, password, first_name, last_name) {
@@ -128,6 +161,8 @@ window.pricosha = {
         email: email,
         password: password
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   login(email, password) {
@@ -136,6 +171,8 @@ window.pricosha = {
         email: email,
         password: password
       }
+    }).then(function(response){
+      console.log(response)
     })
   },
   logout() {
@@ -147,6 +184,8 @@ window.pricosha = {
         old_password: old_password,
         new_password: new_password
       }
+    }).then(function(response){
+      console.log(response)
     })
   }
 };

@@ -1,6 +1,7 @@
 from flask import Flask, session, request, jsonify, make_response, render_template, send_file
 from flask_cors import CORS
-import helpers
+import helpers.helpers as helpers
+import os.path
 
 
 '''
@@ -17,6 +18,7 @@ app = Flask(__name__)
 
 # Set secret key for sessions
 app.secret_key = 'super secret key!98nu9f8u2f'
+app.config['UPLOAD_FOLDER'] = '/home/user/pricosha/backend/img'
 
 # Allow all clients to access our api
 CORS(app, resources={r"/*": {"origins": '*'}})
@@ -35,7 +37,7 @@ def favicon():
 # 1. View public content posted in the last 24 hours
 # + Optional feature 5: Paginated results
 # Tested WORKING on 12/4
-@app.route('/public_content')
+@app.route('/posts/public')
 def public_content():
     page = int(request.form.get('page',1))
     results_per_page = int(request.form.get('results_per_page',10))
@@ -48,20 +50,24 @@ def public_content():
 # Tested WORKING on 12/4
 @app.route('/login', methods=['POST'])
 def login():
+    req = request.get_json()['auth']
+
     # Get info from request
-    email = request.form['email']
-    password = request.form['password']
+    email = str(req['email'])
+    password = str(req['password'])
 
     # Attempt login
-    user = helpers.get_login(email, password)
+    login_ = helpers.get_login(email, password)
 
-    if login['success']:
+
+    if login_['success']:
+        user = login_['response']
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
         session['avatar'] = user['avatar']
-        return jsonify(f"successfully logged in {session['first_name']} {session['last_name']}")
+        return jsonify(helpers.response(True, f"successfully logged in {session['first_name']} {session['last_name']}"))
     else:
-        return jsonify('login failed')
+        return jsonify(helpers.response(False, 'Login failed'))
 
 
 # Logs out user
@@ -96,7 +102,7 @@ def reset_password():
 # 3. View shared content items and info about them
 # + Optional feature 5: Paginated results
 # Tested WORKING on 12/4
-@app.route('/get_shared_content')
+@app.route('/posts/shared')
 def get_shared_content():
     if 'email' not in session:
         return 'User not logged in'
@@ -110,7 +116,7 @@ def get_shared_content():
 # 4. Manage tags
 # 4a. Get proposed tags e.g. where tagee is user and status is false
 # Tested WORKING on 12/4
-@app.route('/get_proposed_tags')
+@app.route('/tags/proposed')
 def get_proposed_tags():
     if 'email' not in session:
         return 'User not logged in'
@@ -122,8 +128,8 @@ def get_proposed_tags():
 
 # 4b. Modify proposed tag
 # Tested WORKING on 12/4
-@app.route('/modify_proposed_tag', methods=['POST'])
-def modify_proposed_tag():
+@app.route('/tags/modify', methods=['POST'])
+def tags_modify():
     if 'email' not in session:
         return 'User not logged in'
     email_tagger = request.form['email_tagger']
@@ -137,21 +143,27 @@ def modify_proposed_tag():
 # 5. Post a content item
 # Optional feature 4: Post image content
 # Tested WORKING on 12/4
-@app.route('/post_content_item', methods=['POST'])
-def post_content_item():
+@app.route('/post/create', methods=['POST'])
+def post_create():
     if 'email' not in session:
         return 'User not logged in'
     email = session['email']
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
-    image_content = request.form.get('image_content', None)
-    result = helpers.create_content_item(email,item_name,is_pub,image_content)
+    filepath=None
+    if 'file' in request.files:
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify('empty filename')
+        filepath = os.path.join('/home/user/pricosha/backend/img/', file.filename)
+        file.save(filepath)
+    result = helpers.create_content_item(email,item_name,is_pub,filepath)
     return jsonify(result)
 
 
 # 6. Tag a content item
 # Tested WORKING on 12/4
-@app.route('/tag_content_item', methods=['POST'])
+@app.route('/tags/create', methods=['POST'])
 def tag_content_item():
     if 'email' not in session:
         return 'User not logged in'
@@ -164,16 +176,36 @@ def tag_content_item():
 
 # 7. Adds friend to friendgroup that person owns
 # Tested WORKING on 12/4
-@app.route('/add_friend', methods=['POST'])
+@app.route('/friend', methods=['POST'])
 def add_friend():
     if 'email' not in session:
         return 'User not logged in'
     owner_email = session['email']
     fg_name = request.form['fg_name']
     friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
+    friend = helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
+    return jsonify(friend)
 
-    return jsonify(helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname))
+@app.route('/unfriend', methods=['POST'])
+def remove_friend():
+    if 'email' not in session:
+        return 'User not logged in'
+    email_owner = session['email']
+    email_member = request.form['email']
+    fg_name = request.form['fg_name']
+    unfriend = helpers.unfriend(email_owner, email_member, fg_name)
+    return jsonify(unfriend)
 
+
+@app.route('/groups/create')
+def create_fg():
+    if 'email' not in session:
+        return 'User not logged in'
+    email_owner = session['email']
+    fg_name = request.form['fg_name']
+    description = request.form.get('description', None)
+    fg = helpers.create_fg(email_owner, fg_name, description)
+    return jsonify(fg)
 
 
 # Optional feature 2: Profile pages

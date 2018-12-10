@@ -13,6 +13,7 @@
     v-for="item, index in content"
     :key="item.item_id"
     :item='item'
+    :group_names='group_names'
     @dirty='updatePost(item.item_id, index)'>
     </Post>
   </v-container>
@@ -41,8 +42,8 @@ export default {
         email: 'author@gmail.com',
         item_name: 'Title1',
         file_path: 'https://i.redd.it/nb6w56a10x221.jpg',
-
       }],
+      group_names: [],
       create_new: false
     }
   },
@@ -62,6 +63,9 @@ export default {
   },
   created() {
     this.updatePosts()
+    pricosha.getGroups(names_only=true).then(response => {
+      this.group_names = response.data
+    })
   },
   watch: {
     src: {

@@ -1,5 +1,6 @@
 import './plugins/axios'
-axios.defaults.baseURL = 'https://pricoshaapi.drew.hu'//'127.0.0.1:5000'//'http://45.55.50.40'
+// axios.defaults.baseURL = 'https://pricoshaapi.drew.hu'
+axios.defaults.baseURL = 'http://localhost:5000'
 window.pricosha = {
   getPosts(url='public', page=1,results_per_page=10) {
     return axios.get('/posts/' + url, {
@@ -62,10 +63,10 @@ window.pricosha = {
   setPost(formdata) { // Must be form for file upload
     return axios.post('/post/create', formdata)
   },
-  getGroups(fg_name) {
-    return axios.post('/groups', {
+  getGroups(names_only=false) {
+    return axios.get('/groups', {
       args: {
-        fg_name: fg_name
+        names_only: names_only
       }
     })
   },

@@ -4,46 +4,41 @@
       <v-toolbar-title>Groups</v-toolbar-title>
     </v-toolbar>
     <v-card-text>
-      <v-list>
-        <v-list-tile>
-          <v-text-field
-            name="fg_name"
-            label="add group"
-            v-model='name_value'
-            hide-details
-            prefix='+'
-            @keyup.enter='addGroup()'>
-          </v-text-field>
-        </v-list-tile>
-        <v-list-group
-        v-for="group, index in groups"
+      <v-text-field
+        name="fg_name"
+        label="add group"
+        v-model='name_value'
+        hide-details
+        prefix='+'
+        @keyup.enter='addGroup()'>
+      </v-text-field>
+      <v-expansion-panel expand>
+        <v-expansion-panel-content
+        v-for="group in groups"
         :key="group.fg_name">
-          <v-list-tile slot="activator">
-            <v-list-tile-content>
-              <v-list-tile-title>{{group.fg_name}}</v-list-tile-title>
-            </v-list-tile-content>
+          <div slot="header">
+            {{group.fg_name}}
             <v-btn round outline color="error" dark
-            @click='groups.splice(index,1);pricosha.removeGroup(group.fg_name)'>remove</v-btn>
-          </v-list-tile>
-          <v-list-tile>
+            @click='removeGroup(group)'>remove</v-btn>
+          </div>
+          <v-card>
             <v-combobox
               v-model="group.members"
               chips
               multiple
-              @change=''>
+              @input='modifyGroup(group)'>
               <template slot="selection" slot-scope="data">
                 <v-chip
                   :selected="data.selected"
                   close
-                  @input="pricosha.removeGroupMember(group.fg_name, data.item);
-                  groups.members.splice(groups.members.indexOf(data.item),1)">
+                  @input="removeGroupMember(group, data.item)">
                   <strong>{{ data.item }}</strong>&nbsp;
                 </v-chip>
               </template>
             </v-combobox>
-          </v-list-tile>
-        </v-list-group>
-      </v-list>
+          </v-card>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-card-text>
   </v-card>
 </template>
@@ -59,11 +54,6 @@
             fg_name: 'name',
             members: [
               'example@gmail.com'
-              // {
-              //   email: 'example@gmail.com',
-              //   first_name: 'Lucas',
-              //   last_name: 'OhZia'
-              // }
             ]
           }
         ]
@@ -79,7 +69,23 @@
           members:[]
         })
         this.name_value=''
+      },
+      removeGroup(group) {
+        pricosha.removeGroup(group.fg_name)
+        this.groups.splice(this.groups.indexOf(group),1)
+      },
+      removeGroupMember(group, member) {
+        pricosha.removeGroupMember(group.fg_name, member)
+        group.members.splice(group.members.indexOf(member),1)
+      },
+      modifyGroup(group) {
+        pricosha.setGroupMember(group.fg_name, group.members[-1])
       }
+    },
+    created() {
+      pricosha.getGroups().then(response => {
+        this.groups = response.data
+      })
     }
   }
 </script>

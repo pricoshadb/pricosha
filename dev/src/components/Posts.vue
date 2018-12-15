@@ -51,12 +51,7 @@ export default {
   },
   data() {
     return {
-      content: [{
-        tagged: ['email1@gmail.com', 'email2@gmail.com'],
-        email: 'author@gmail.com',
-        item_name: 'Title1',
-        file_path: 'https://i.redd.it/nb6w56a10x221.jpg',
-      }],
+      content: [],
       page: 1,
       group_names: ['test1', 'test2'],
       create_new: false

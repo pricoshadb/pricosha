@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS Saved (
     email VARCHAR(50),
     item_id INT,
     save_time DATETIME NOT NULL,
+    PRIMARY KEY (email, item_id),
     FOREIGN KEY (email) REFERENCES Person(email),
     FOREIGN KEY (item_id) REFERENCES ContentItem(item_id)
+);
+CREATE TABLE IF NOT EXISTS Friends (
+   email VARCHAR(50),
+   email_friend VARCHAR(50),
+    PRIMARY KEY (email, email_friend),
+    FOREIGN KEY (email) REFERENCES Person(email),
+    FOREIGN KEY (email_friend) REFERENCES Person(email)
 );

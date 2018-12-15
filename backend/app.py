@@ -48,8 +48,8 @@ def login():
     # Attempt login
     login_ = helpers.get_login(email, password)
 
-    if login_['success']:
-        user = login_['response']
+    if login_[0]['success']:
+        user = login_[0]['response']
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
         session['avatar'] = user['avatar']
@@ -88,78 +88,30 @@ def reset_password():
 # Tested WORKING on 12/4
 @app.route('/posts/public')
 def public_content():
-    page = int(request.form.get('page',1))
-    results_per_page = int(request.form.get('results_per_page',10))
-    content = helpers.get_public_content(page,results_per_page)
+    req = request.args
+    page = int(req.get('page', 1))
+    results_per_page = int(req.get('results_per_page', 10))
+    content = helpers.get_public_content(page, results_per_page)
     return jsonify(content)
 
 
-@app.route('/posts/get')
+@app.route('/post')
 def get_post():
     if 'email' not in session:
         return 'User not logged in'
-    req = request.get_json()
+    req = request.args
     post = helpers.get_post(req['item_id'])
     return jsonify(post)
-
-# 3. View shared content items and info about them
-# + Optional feature 5: Paginated results
-# Tested WORKING on 12/4
-@app.route('/posts/shared')
-def get_shared_content():
-    if 'email' not in session:
-        return 'User not logged in'
-    email = session['email']
-    page = request.form.get('page', 1)
-    results_per_page = request.form.get('results_per_page',10)
-    content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
-    return jsonify(content)
-
-
-# Optional feature 3: Saved posts. Gets post that user has saved
-# + Optional feature 5: Paginated results
-# Tested WORKING on 12/4
-@app.route('/posts/saved', methods=['GET', 'POST'])
-def get_saved_posts():
-    if 'email' not in session:
-        return 'User not logged in'
-    email = session['email']
-    page = request.form.get('page',1)
-    results_per_page = request.form.get('results_per_page',10)
-    saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
-    return jsonify(saved_posts)
-
-
-# Tested WORKING on 12/4
-@app.route('/posts/save', methods=['POST'])
-def save_post():
-    if 'email' not in session:
-        return 'User not logged in'
-    email = session['email']
-    item_id = request.form['item_id']
-    helpers.save_post(email, item_id)
-    return 'ok'
-
-
-# Tested WORKING on 12/4
-@app.route('/posts/unsave', methods=['POST'])
-def unsave_post():
-    if 'email' not in session:
-        return 'User not logged in'
-    email = session['email']
-    item_id = request.form['item_id']
-    helpers.unsave_post(email, item_id)
-    return 'ok'
-
 
 
 # 5. Post a content item
 # Optional feature 4: Post image content
 # Tested WORKING on 12/4
-@app.route('/posts/create', methods=['POST'])
+@app.route('/post/create', methods=['POST'])
 def create_post():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.get_json()
     email = session['email']
     item_name = request.form['item_name']
     is_pub = request.form['is_pub']
@@ -174,15 +126,72 @@ def create_post():
     return jsonify(result)
 
 
+# 3. View shared content items and info about them
+# + Optional feature 5: Paginated results
+# Tested WORKING on 12/4
+@app.route('/posts/shared')
+def get_shared_content():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.args
+    email = session['email']
+    page = req.get('page', 1)
+    results_per_page = req.get('results_per_page',10)
+    content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
+    return jsonify(content)
+
+
+# Optional feature 3: Saved posts. Gets post that user has saved
+# + Optional feature 5: Paginated results
+# Tested WORKING on 12/4
+@app.route('/posts/saved')
+def get_saved_posts():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.args
+    email = session['email']
+    page = req.get('page',1)
+    results_per_page = req.get('results_per_page',10)
+    saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
+    return jsonify(saved_posts)
+
+
+# Tested WORKING on 12/4
+@app.route('/post/save', methods=['POST'])
+def save_post():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.get_json()
+    email = session['email']
+    item_id = req['item_id']
+    helpers.save_post(email, item_id)
+    return 'ok'
+
+
+# Tested WORKING on 12/4
+@app.route('/post/unsave', methods=['POST'])
+def unsave_post():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.get_json()
+    email = session['email']
+    item_id = req['item_id']
+    helpers.unsave_post(email, item_id)
+    return 'ok'
+
+
+
+
 # 6. Tag a content item
 # Tested WORKING on 12/4
 @app.route('/tags/create', methods=['POST'])
 def tag_content_item():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.get_json()
     current_user = session['email']
-    tagee_email = request.form['tagee_email']
-    item_id = request.form['item_id']
+    tagee_email = req['tagee_email']
+    item_id = req['item_id']
     tag_item = helpers.tag_item(current_user,tagee_email,item_id)
     return jsonify(tag_item)
 
@@ -193,9 +202,10 @@ def tag_content_item():
 def get_proposed_tags():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.args
     email = session['email']
-    page = request.form.get('page',1)
-    results_per_page = request.form.get('results_per_page',10)
+    page = req.get('page',1)
+    results_per_page = req.get('results_per_page',10)
     proposed_tags = helpers.get_proposed_tags(email, page=page, results_per_page=results_per_page)
     return jsonify(proposed_tags)
 
@@ -205,48 +215,52 @@ def get_proposed_tags():
 def tags_modify():
     if 'email' not in session:
         return 'User not logged in'
-    email_tagger = request.form['email_tagger']
+    req = request.get_json()
+    email_tagger = req['email_tagger']
     email_tagged = session['email']
-    item_id = request.form['item_id']
-    decision = request.form['decision']
+    item_id = req['item_id']
+    decision = req['decision']
     result = helpers.modify_proposed_tag(email_tagger, email_tagged, item_id, decision)
     return jsonify(result)
 
 # 7. Adds friend to friendgroup that person owns
 # Tested WORKING on 12/4
-@app.route('/friend', methods=['POST'])
+@app.route('/group/members/add', methods=['POST'])
 def add_friend():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.get_json()
     owner_email = session['email']
-    fg_name = request.form['fg_name']
-    friend_fname, friend_lname = request.form['friend_fname'], request.form['friend_lname']
-    friend = helpers.add_friend(owner_email, fg_name, friend_fname, friend_lname)
+    fg_name = req['fg_name']
+    friend_fname, friend_lname = req['friend_fname'], req['friend_lname']
+    friend = helpers.add_member(owner_email, fg_name, friend_fname, friend_lname)
     return jsonify(friend)
 
-@app.route('/unfriend', methods=['POST'])
+@app.route('/group/members/remove', methods=['POST'])
 def remove_friend():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.get_json()
     email_owner = session['email']
-    email_member = request.form['email']
-    fg_name = request.form['fg_name']
-    unfriend = helpers.unfriend(email_owner, email_member, fg_name)
+    email_member = req['email']
+    fg_name = req['fg_name']
+    unfriend = helpers.remove_member(email_owner, email_member, fg_name)
     return jsonify(unfriend)
 
 
-@app.route('/groups/create')
+@app.route('/group/create')
 def create_group():
     if 'email' not in session:
         return 'User not logged in'
+    req = request.args
     email_owner = session['email']
-    fg_name = request.form['fg_name']
-    description = request.form.get('description', None)
+    fg_name = req['fg_name']
+    description = req.get('description', None)
     fg = helpers.create_group(email_owner, fg_name, description)
     return jsonify(fg)
 
 
-@app.route('/groups/get')
+@app.route('/groups')
 def get_groups():
     if 'email' not in session:
         return 'User not logged in'
@@ -257,7 +271,7 @@ def get_groups():
 
 # Optional feature 2: Profile pages
 # Profile info is always public
-@app.route('/get_profile_info')
+@app.route('/profile')
 def get_profile_info():
     # return:
     # user: {
@@ -267,20 +281,22 @@ def get_profile_info():
     #   last_name: '',
     #   friend: false,
     # }
-    email = request.form.get('email', session['email'])
+    req = request.args
+    email = req['email']
     profile_info = helpers.get_profile_info(email)
     return jsonify(profile_info)
 
 
-@app.route('/set_profile_bio')
+@app.route('/set_profile_bio', methods=['POST'])
 def set_profile_bio():
+    req = request.get_json()
     email = session['email']
-    new_bio = request.form.get('new_bio')
+    new_bio = req.get('new_bio')
     profile_info = helpers.set_profile_bio(email,new_bio)
     return jsonify(profile_info)
 
 
-@app.route('/set_profile_avatar')
+@app.route('/set_profile_avatar', methods=['POST'])
 def set_profile_avatar():
     email = session['email']
     new_avatar = request.form.get('new_avatar')
@@ -304,10 +320,12 @@ def post_comment():
     return jsonify(new_comment)
 
 
-@app.route('/comments/get')
+@app.route('/comments')
 def get_comments():
-    req = request.get_json()
-    email = session['email']
+    req = request.args
+    email = None
+    if 'email' in session:
+        email = session['email']
     item_id = req['item_id']
     comments = helpers.get_comments(email, item_id)
     return jsonify(comments)
@@ -316,9 +334,41 @@ def get_comments():
 # deletes comment if user wrote comment or if user owns post
 @app.route('/comments/delete', methods=['POST'])
 def delete_comment():
+    req = request.get_json()
     email = session['email']
-    item_id = request.form['item_id']
-    comment_id = request.form['comment_id']
+    item_id = req['item_id']
+    comment_id = req['comment_id']
+
+
+@app.route('/friends')
+def get_friends():
+    if 'email' not in session:
+        return 'User not logged in'
+    email = session['email']
+    friends = helpers.get_friends(email)
+    return jsonify(friends)
+
+
+@app.route('/friend', methods=['POST'])
+def friend():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.get_json()
+    email = session['email']
+    email_other = req['email']
+    friends = helpers.add_friend(email, email_other)
+    return jsonify(friends)
+
+
+@app.route('/unfriend', methods=['POST'])
+def unfriend():
+    if 'email' not in session:
+        return 'User not logged in'
+    req = request.get_json()
+    email = session['email']
+    email_other = req['email']
+    friends = helpers.remove_friend(email, email_other)
+    return jsonify(friends)
 
 
 @app.route("/img/<path:path>")

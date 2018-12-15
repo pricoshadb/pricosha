@@ -3,180 +3,126 @@ import './plugins/axios'
 axios.defaults.baseURL = 'http://localhost:5000'
 window.pricosha = {
   getPosts(url='public', page=1, results_per_page=10) {
+axios.interceptors.request.use(request => {
+  console.log('Starting Request: '+request.url, request)
+  return request
+})
+
+axios.interceptors.response.use(response => {
+  console.log('Response:', response)
+  return response
+})
+
     return axios.get('/posts/' + url, {
-      params: {
-        page: page,
-        results_per_page: results_per_page,
-      }
-    }).then(function(response){
-      console.log(response)
+      page: page,
+      results_per_page: results_per_page,
     })
   },
-  setTagged(post_id) {
-    return axios.post('/tags/create', {
-      data: {
-        post_id: post_id
+  getPost(item_id) {
+    return axios.get('/post', {
+      params: {
+        item_id: item_id
       }
-    }).then(function(response){
-      console.log(response)
+    })
+  },
+  setPost(formdata) { // Must be form for file upload
+    return axios.post('/post/create', formdata)
+  },
+  setTagged(item_id) {
+    return axios.post('/tags/create', {
+      item_id: item_id
     })
   },
   getProposedTags() {
     return axios.get('/tags/proposed', {
       params: {
         page: page,
-        results_per_page: results_per_page,
+        results_per_page: results_per_page
       }
-    }).then(function(response){
-      console.log(response)
     })
   },
   modifyProposedTag(item_id, decision) {
     return axios.post('/tags/modify', {
-      data: {
-        item_id: item_id,
-        decision: decision
-      }
-    }).then(function(response){
-      console.log(response)
-    })
-  },
-  getPost(item_id) {
-    return axios.get('/item', {
-      args: {
-        item_id: item_id
-      }
-    }).then(function(response){
-      console.log(response)
+      item_id: item_id,
+      decision: decision
     })
   },
   getProfile(email) {
     return axios.get('/profile', {
-      args: {
+      params: {
         email: email
       }
-    }).then(function(response){
-      console.log(response)
     })
   },
   getFriends() {
-    return axios.get('/friends').then(function(response) {
-      console.log(response)
-    })
+    return axios.get('/friends')
   },
   setFriend(email) {
     return axios.post('/friend', {
-      args: {
-        email: email
-      }
-    }).then(function(response){
-      console.log(response)
+      email: email
     })
   },
   removeFriend(email) {
     return axios.post('/unfriend', {
-      args: {
-        email: email
-      }
-    }).then(function(response){
-      console.log(response)
+      email: email
     })
   },
-  setPost(formdata) { // Must be form for file upload
-    return axios.post('/post/create', formdata)
-  },
-  getGroups(names_only=false) {
+  getGroups(names_only = false) {
     return axios.get('/groups', {
-      args: {
+      params: {
         names_only: names_only
       }
-    }).then(function(response){
-      console.log(response)
     })
   },
   setGroup(fg_name) {
     return axios.post('/group/create', {
-      args: {
-        fg_name: fg_name
-      }
-    }).then(function(response){
-      console.log(response)
+      fg_name: fg_name
     })
   },
   removeGroup(fg_name) {
     return axios.post('/group/remove', {
-      args: {
-        fg_name: fg_name
-      }
-    }).then(function(response){
-      console.log(response)
+      fg_name: fg_name
     })
   },
   setGroupMember(fg_name, email) {
     return axios.post('/group/members/add', {
-      args: {
-        fg_name: fg_name,
-        email: email
-      }
-    }).then(function(response){
-      console.log(response)
+      fg_name: fg_name,
+      email: email
     })
   },
   removeGroupMember(fg_name, email) {
     return axios.post('/group/members/remove', {
-      args: {
-        fg_name: fg_name,
-        email: email
-      }
-    }).then(function(response){
-      console.log(response)
+      fg_name: fg_name,
+      email: email
     })
   },
   setShare(item_id, fg_name) {
     return axios.post('/post/share', {
-      args: {
-        item_id: item_id,
-        fg_name: fg_name
-      }
-    }).then(function(response){
-      console.log(response)
+      item_id: item_id,
+      fg_name: fg_name
     })
   },
-  setSaved(post_id) {
+  setSaved(item_id) {
     return axios.post('/post/save', {
-      data: {
-        post_id: post_id
-      }
-    }).then(function(response){
-      console.log(response)
+      item_id: item_id
     })
   },
-  getComments(post_id) {
-    return axios.get('/comments/get', {
-      data: {
-        post_id: post_id
-      }
-    }).then(function(response){
-      console.log(response)
-    })
-  },
-  setComment(post_id, content) {
-    return axios.post('/comments/post', {
-      data: {
-        post_id: post_id,
-        content: content
-      }
-    }).then(function(response){
-      console.log(response)
-    })
-  },
-  removeSaved(post_id) {
+  removeSaved(item_id) {
     return axios.post('/post/unsave', {
-      data: {
-        post_id: post_id
+      item_id: item_id
+    })
+  },
+  getComments(item_id) {
+    return axios.get('/comments', {
+      params: {
+        item_id: item_id
       }
-    }).then(function(response){
-      console.log(response)
+    })
+  },
+  setComment(item_id, content) {
+    return axios.post('/comments/post', {
+      item_id: item_id,
+      content: content
     })
   },
   register(email, password, first_name, last_name) {
@@ -188,8 +134,6 @@ window.pricosha = {
         username: email,
         password: password
       }
-    }).then(function(response){
-      console.log(response)
     })
   },
   login(email, password) {
@@ -198,8 +142,6 @@ window.pricosha = {
         username: email,
         password: password
       }
-    }).then(response => {
-      console.log(response)
     })
   },
   logout() {
@@ -207,12 +149,8 @@ window.pricosha = {
   },
   resetPassword(email, old_password, new_password) {
     return axios.post('/reset', {
-      data: {
-        old_password: old_password,
-        new_password: new_password
-      }
-    }).then(function(response){
-      console.log(response)
+      old_password: old_password,
+      new_password: new_password
     })
   }
 };

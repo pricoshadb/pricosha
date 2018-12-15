@@ -12,7 +12,7 @@
             {{friend.email}}
           </v-list-tile-content>
           <v-btn round outline color="error" dark
-          @click='friends.splice(index,1);pricosha.removeFriend(friend.email)'>unfriend</v-btn>
+          @click='removeFriend(index)'>unfriend</v-btn>
         </v-list-tile>
         <v-list-tile v-if='friends.length==0'>
           <v-layout justify-center>
@@ -26,14 +26,16 @@
 
 <script>
   export default {
-    name: 'Login',
+    name: 'Friends',
     data() {
       return {
-        friends: [
-          {
-            email: 'example@gmail.com'
-          }
-        ]
+        friends: []
+      }
+    },
+    methods: {
+      removeFriend(index) {
+        pricosha.removeFriend(friend.email)
+        this.friends.splice(index,1)
       }
     },
     created() {

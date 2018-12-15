@@ -49,14 +49,7 @@
     data() {
       return {
         name_value: '',
-        groups: [
-          {
-            fg_name: 'name',
-            members: [
-              'example@gmail.com'
-            ]
-          }
-        ]
+        groups: []
       }
     },
     methods: {

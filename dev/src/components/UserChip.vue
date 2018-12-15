@@ -44,10 +44,10 @@ export default {
   data() {
     return {
       user: {
-        bio: 'SOme text',
-        avatar: 'https://i.stack.imgur.com/RlLoT.png?s=32&g=1',
-        first_name: 'Lucas',
-        last_name: 'Pollice',
+        bio: '',
+        avatar: '',
+        first_name: '',
+        last_name: '',
         friend: false,
       }
     }

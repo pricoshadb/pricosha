@@ -22,10 +22,10 @@ def can_see(email, item_id):
 
 
 def response(success, msg):
-    return {
-        'success': success,
-        'response': msg
-    }
+    return ({
+        'response': msg,
+        'success': success
+    }, (200 if success else 418))
 
 
 # 1. Gets public content from past 24 hours
@@ -60,6 +60,14 @@ def get_public_content(page=1, results_per_page=10):
         content_items.append(formatted_data)
     return content_items
 
+def get_post(item_id):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+
+    sql = '''SELECT * FROM ContentItem 
+              WHERE is_pub=1 AND item_id=%s'''
+    c.execute(sql, (item_id,))
+    result = c.fetchall()
+    return result
 
 # 2. Gets user login info
 def get_login(email, password):
@@ -201,7 +209,7 @@ def tag_item(tagger_email, tagee_email, item_id):
 
 
 # 7. Add friend
-def add_friend(owner_email, fg_name, friend_fname, friend_lname):
+def add_member(owner_email, fg_name, friend_fname, friend_lname):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''SELECT * FROM Person WHERE first_name=%s AND last_name=%s'''
     c.execute(sql, (friend_fname, friend_lname))
@@ -232,7 +240,7 @@ def add_friend(owner_email, fg_name, friend_fname, friend_lname):
     conn.commit()
     return 'Successfully added friend'
 
-def unfriend(email_owner, email_member, fg_name):
+def remove_member(email_owner, email_member, fg_name):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''DELETE FROM Belong WHERE email_owner=%s AND email_member=%s AND fg_name=%s'''
     c.execute(sql, (email_owner, email_member, fg_name))
@@ -318,6 +326,7 @@ def post_comment(email, item_id, comment):
     conn.commit()
     return True
 
+
 def get_comments(email, item_id):
     if not can_see(email, item_id):
         return 'User is not allowed to see this post'
@@ -326,3 +335,25 @@ def get_comments(email, item_id):
     c.execute(sql, (item_id,))
     comments = c.fetchall()
     return comments
+
+
+def get_friends(email):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''SELECT email_friend FROM Friends WHERE email=%s'''
+    c.execute(sql, (email,))
+    return c.fetchall()
+
+def add_friend(email, email_friend):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''INSERT INTO Friends(email, email_friend) 
+              VALUES (%s, %s)'''
+    c.execute(sql, (email, email_friend))
+    conn.commit()
+    return response(True, 'Added friend.')
+
+
+def remove_friend(email, email_friend):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''DELETE FROM Friends WHERE email=%s AND email_friend=%s'''
+    c.execute(sql, (email, email_friend))
+    conn.commit()

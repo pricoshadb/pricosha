@@ -87,12 +87,7 @@ export default {
       comment_value: '',
       share_state: false,
       saved: false,
-      comments: [
-        {
-          email: 'example email',
-          content: `j`
-        }
-      ]
+      comments: []
     }
   },
   props: {

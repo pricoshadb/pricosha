@@ -239,13 +239,21 @@ def unfriend(email_owner, email_member, fg_name):
     conn.commit()
     return response(True, 'Removed friend from fg')
 
-def create_fg(email_owner, fg_name, description):
+def create_group(email_owner, fg_name, description):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''INSERT INTO FriendGroup(fg_name, email, description)
               VALUES (%s,%s,%s)'''
     c.execute(sql, (fg_name, email_owner, description))
     conn.commit()
 
+def get_groups(email_owner):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''SELECT fg_name, description, email_member FROM FriendGroup JOIN Belong 
+            ON email=email_owner AND FriendGroup.fg_name=Belong.fg_name 
+            where email=%s GROUP BY fg_name'''
+    c.execute(sql, (email_owner,))
+    g = c.fetchall()
+    return g
 
 # Optional feature 2: Profile pages
 def get_profile_info(email):

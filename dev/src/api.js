@@ -152,7 +152,7 @@ window.pricosha = {
     })
   },
   getComments(post_id) {
-    return axios.get('/comments', {
+    return axios.get('/comments/get', {
       data: {
         post_id: post_id
       }
@@ -161,7 +161,7 @@ window.pricosha = {
     })
   },
   setComment(post_id, content) {
-    return axios.post('/comment', {
+    return axios.post('/comments/post', {
       data: {
         post_id: post_id,
         content: content

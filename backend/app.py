@@ -235,13 +235,22 @@ def remove_friend():
 
 
 @app.route('/groups/create')
-def create_fg():
+def create_group():
     if 'email' not in session:
         return 'User not logged in'
     email_owner = session['email']
     fg_name = request.form['fg_name']
     description = request.form.get('description', None)
-    fg = helpers.create_fg(email_owner, fg_name, description)
+    fg = helpers.create_group(email_owner, fg_name, description)
+    return jsonify(fg)
+
+
+@app.route('/groups/get')
+def get_groups():
+    if 'email' not in session:
+        return 'User not logged in'
+    email_owner = session['email']
+    fg = helpers.get_groups(email_owner)
     return jsonify(fg)
 
 

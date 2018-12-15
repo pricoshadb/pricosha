@@ -39,11 +39,11 @@ def favicon():
 # Tested WORKING on 12/4
 @app.route('/login', methods=['POST'])
 def login():
-    req = request.get_json()
+    auth = request.authorization
 
     # Get info from request
-    email = str(req['email'])
-    password = str(req['password'])
+    email = auth.username
+    password = auth.password
 
     # Attempt login
     login_ = helpers.get_login(email, password)
@@ -71,7 +71,8 @@ def logout():
 @app.route('/register', methods=['POST'])
 def register():
     req = request.get_json()
-    new_user = helpers.register(req['email'], req['password'], req['first_name'], req['last_name'])
+    auth = request.authorization
+    new_user = helpers.register(auth['username'], auth['password'], req['first_name'], req['last_name'])
     return jsonify(new_user)
 
 # Resets user password

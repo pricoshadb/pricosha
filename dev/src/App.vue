@@ -63,7 +63,7 @@
         </v-dialog>
         <!-- Login/out -->
         <v-list-tile
-            @click='drawer=false;pricosha.logout();logged_in=false'
+            @click='drawer=false;logout()'
             v-if='logged_in'>
           <v-list-tile-action>
             <v-icon>meeting_room</v-icon>
@@ -127,6 +127,13 @@
         drawer: null,
         content_source: 'public',
         logged_in: false,
+      }
+    },
+    methods: {
+      logout() {
+        pricosha.logout().then(response => {
+          this.logged_in = false
+        })
       }
     }
   }

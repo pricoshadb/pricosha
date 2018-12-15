@@ -181,8 +181,11 @@ window.pricosha = {
   },
   register(email, password, first_name, last_name) {
     return axios.post('/register', {
+      first_name: first_name,
+      last_name: last_name
+    }, {
       auth: {
-        email: email,
+        username: email,
         password: password
       }
     }).then(function(response){
@@ -190,9 +193,9 @@ window.pricosha = {
     })
   },
   login(email, password) {
-    return axios.post('/login', {
+    return axios.post('/login', {}, {
       auth: {
-        email: email,
+        username: email,
         password: password
       }
     }).then(response => {

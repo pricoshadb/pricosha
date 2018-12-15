@@ -12,6 +12,7 @@ axios.interceptors.response.use(response => {
 })
 
 export default {
+  authed: false,
   getPosts(url = 'public', page = 1, results_per_page = 10) {
     return axios.get('/posts/' + url, {
       page: page,

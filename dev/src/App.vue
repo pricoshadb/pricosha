@@ -64,7 +64,7 @@
         <!-- Login/out -->
         <v-list-tile
             @click='drawer=false;logout()'
-            v-if='logged_in'>
+            v-if='$pricosha.authed'>
           <v-list-tile-action>
             <v-icon>meeting_room</v-icon>
           </v-list-tile-action>
@@ -74,7 +74,7 @@
         </v-list-tile>
         <v-list-tile
             @click='drawer=false;login_dialog=true'
-            v-if='!logged_in'>
+            v-if='!$pricosha.authed'>
           <v-list-tile-action>
             <v-icon>meeting_room</v-icon>
           </v-list-tile-action>
@@ -86,7 +86,7 @@
             v-model="login_dialog">
           <Login
               @end_dialog='login_dialog=false'
-              @success='logged_in=true'>
+              @success='$pricosha.authed=true'>
           </Login>
         </v-dialog>
       </v-list>
@@ -126,13 +126,12 @@
         friends_dialog: null,
         drawer: null,
         content_source: 'public',
-        logged_in: false,
       }
     },
     methods: {
       logout() {
         this.$pricosha.logout().then(response => {
-          this.logged_in = false
+          this.$pricosha.authed=false
         })
       }
     }

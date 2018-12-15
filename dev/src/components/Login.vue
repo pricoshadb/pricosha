@@ -7,7 +7,7 @@
     <v-card-text>
       <v-form>
         <v-text-field v-model='email' prepend-icon="person" name="login" label="Email" type="text"></v-text-field>
-        <v-text-field v-model='password' prepend-icon="lock" name="password" label="Password" type="password"></v-text-field>
+        <v-text-field v-model='password' prepend-icon="lock" name="password" label="Password" type="password" :messages='[error]'></v-text-field>
         <div v-if='show_register'>
           <v-text-field v-model='first_name' prepend-icon=' ' name='first_name' label='First Name' type='text'></v-text-field>
           <v-text-field v-model='last_name' prepend-icon=' ' name='last_name' label='Last Name' type='text'></v-text-field>
@@ -48,27 +48,30 @@
         password: null,
         first_name: '',
         last_name: '',
-        show_register: false
+        show_register: false,
+        error: '',
       }
     },
     methods: {
       login() {
         this.$pricosha.login(this.email, this.password).then(response => {
+          this.$pricosha.authed = true
           this.$emit('success')
-        }).catch(error => {
-          console.error(error);
-        }).then(() => {
           this.$emit('end_dialog')
-        });
+          this.error=''
+        }).catch(error => {
+          this.error = 'Invalid password'
+          console.error(error);
+        })
       },
       register() {
         this.$pricosha.register(this.email, this.password, this.first_name, this.last_name).then(response => {
-          this.$emit('success')
+          this.show_register = false
+          this.login()
         }).catch(error => {
+          this.error = 'Registration error'
           console.error(error);
-        }).then(() => {
-          this.$emit('end_dialog')
-        });
+        })
       }
     }
   }

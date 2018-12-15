@@ -46,10 +46,10 @@ def login():
     password = auth.password
 
     # Attempt login
-    login_ = helpers.get_login(email, password)
+    login_ = helpers.get_login(email, password)[0]
 
-    if login_[0]['success']:
-        user = login_[0]['response']
+    if login_['success']:
+        user = login_['response']
         session['email'] = user['email']
         session['first_name'], session['last_name'] = user['first_name'], user['last_name']
         session['avatar'] = user['avatar']

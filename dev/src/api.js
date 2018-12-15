@@ -1,8 +1,6 @@
 import './plugins/axios'
 // axios.defaults.baseURL = 'https://pricoshaapi.drew.hu'
 axios.defaults.baseURL = 'http://localhost:5000'
-window.pricosha = {
-  getPosts(url='public', page=1, results_per_page=10) {
 axios.interceptors.request.use(request => {
   console.log('Starting Request: '+request.url, request)
   return request
@@ -13,6 +11,8 @@ axios.interceptors.response.use(response => {
   return response
 })
 
+export default {
+  getPosts(url = 'public', page = 1, results_per_page = 10) {
     return axios.get('/posts/' + url, {
       page: page,
       results_per_page: results_per_page,

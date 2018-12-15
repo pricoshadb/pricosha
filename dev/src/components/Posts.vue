@@ -59,13 +59,13 @@ export default {
   },
   methods: {
     updatePost(item_id, index) {
-      pricosha.getPost(item_id).then(
+      this.$pricosha.getPost(item_id).then(
         response => {
           this.content[index] = response.data
         })
     },
     updatePosts() {
-      pricosha.getPosts(this.src, this.page).then(
+      this.$pricosha.getPosts(this.src, this.page).then(
         response => {
           this.content = response.data;
         });
@@ -73,7 +73,7 @@ export default {
   },
   created() {
     this.updatePosts()
-    pricosha.getGroups(true).then(response => {
+    this.$pricosha.getGroups(true).then(response => {
       this.group_names = response.data
     })
   },

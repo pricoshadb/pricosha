@@ -53,7 +53,7 @@
     },
     methods: {
       login() {
-        pricosha.login(this.email, this.password).then(response => {
+        this.$pricosha.login(this.email, this.password).then(response => {
           this.$emit('success')
         }).catch(error => {
           console.error(error);
@@ -62,7 +62,7 @@
         });
       },
       register() {
-        pricosha.register(this.email, this.password, this.first_name, this.last_name).then(response => {
+        this.$pricosha.register(this.email, this.password, this.first_name, this.last_name).then(response => {
           this.$emit('success')
         }).catch(error => {
           console.error(error);

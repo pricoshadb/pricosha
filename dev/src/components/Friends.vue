@@ -34,12 +34,12 @@
     },
     methods: {
       removeFriend(index) {
-        pricosha.removeFriend(friend.email)
+        this.$pricosha.removeFriend(friend.email)
         this.friends.splice(index,1)
       }
     },
     created() {
-      pricosha.getFriends().then(response => {
+      this.$pricosha.getFriends().then(response => {
         this.friends = response.data
       })
     }

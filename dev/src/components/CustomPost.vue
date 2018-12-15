@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-img
-      :src="path || 'https://pricosha.drew.hu/img/none.jpg'">
+      :src="path || ''">
     </v-img>
     <v-card-text class="pt-1 pb-0">
       <v-form ref='form'>
@@ -50,7 +50,7 @@ export default {
         data.append('item_name', this.item_name)
         data.append('is_pub', this.is_pub)
         data.append('image_content', this.image_content)
-        pricosha.setPost(data).then(response => {
+        this.$pricosha.setPost(data).then(response => {
           this.$emit('submit')
         })
       }

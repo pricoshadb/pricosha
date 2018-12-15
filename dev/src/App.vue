@@ -131,7 +131,7 @@
     },
     methods: {
       logout() {
-        pricosha.logout().then(response => {
+        this.$pricosha.logout().then(response => {
           this.logged_in = false
         })
       }

@@ -73,7 +73,6 @@ def get_login(email, password):
     sql = '''SELECT * FROM Person WHERE email=%s'''
     c.execute(sql, (email,))
     person = c.fetchone()
-
     if person is None:
         return {'success': False}
 
@@ -257,9 +256,9 @@ def remove_group(email_owner, fg_name):
 
 def get_groups(email_owner):
     c = conn.cursor(pymysql.cursors.DictCursor)
-    sql = '''SELECT fg_name, description, email_member FROM FriendGroup JOIN Belong 
+    sql = '''SELECT FriendGroup.fg_name, description, email_member FROM FriendGroup JOIN Belong 
             ON email=email_owner AND FriendGroup.fg_name=Belong.fg_name 
-            where email=%s GROUP BY fg_name'''
+            where email=%s GROUP BY FriendGroup.fg_name'''
     c.execute(sql, (email_owner,))
     g = c.fetchall()
     return g

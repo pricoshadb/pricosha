@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 import helpers.helpers as helpers
 import os.path
 from helpers.util import response
-
+import json
 
 '''
 Full documentation: https://pricoshaapi.drew.hu
@@ -124,9 +124,10 @@ def create_post():
         return response(False, 'User not logged in')
     req = request.get_json()
     email = session['email']
-    item_name = request.form['item_name']
-    is_pub = request.form['is_pub']
-    filepath=None
+    data = json.loads(request.form['data'])
+    item_name = data['item_name']
+    is_pub = data['is_pub']
+    filepath = None
     if 'file' in request.files:
         file = request.files['file']
         if file.filename == '':

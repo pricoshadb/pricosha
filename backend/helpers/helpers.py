@@ -1,5 +1,6 @@
 import hashlib
 import pymysql
+from helpers.util import response
 
 conn = pymysql.connect(host='localhost',
                        user='user',
@@ -20,12 +21,6 @@ def can_see(email, item_id):
     result = c.fetchone()
     return result['cnt'] > 0
 
-
-def response(success, msg):
-    return ({
-        'response': msg,
-        'success': success
-    }, (200 if success else 418))
 
 
 # 1. Gets public content from past 24 hours
@@ -80,7 +75,7 @@ def get_login(email, password):
     person = c.fetchone()
 
     if person is None:
-        return response(False, 'Email does not exist')
+        return {'success': False}
 
     # Check password and log user in if success
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
@@ -91,9 +86,9 @@ def get_login(email, password):
             'last_name': person['last_name'],
             'avatar': person['avatar']
         }
-        return response(True, user_data)
+        return {'success': True, 'response': user_data}
     else:
-        return response(False, 'Incorrect password')
+        return {'success': False}
 
 
 def register(email, password, first_name, last_name):
@@ -104,14 +99,14 @@ def register(email, password, first_name, last_name):
     c.execute(sql, (email,))
     user_count = c.fetchone()
     if user_count['cnt'] > 0:
-        return response(False, 'User with email already exists')
+        return {'success': False, 'response': 'User with email already exists'}
 
     # Create new user
     sql = '''INSERT INTO Person(email, password_hash, first_name, last_name)
               VALUES (%s,SHA2(%s, 256), %s, %s)'''
     c.execute(sql, (email, password, first_name, last_name))
     conn.commit()
-    return response(True, f'Successfully registered user {first_name} {last_name}')
+    return {'success': True, 'response': f'Successfully registered user {first_name} {last_name}'}
 
 
 def reset_password(email, old_password, new_password):
@@ -120,7 +115,7 @@ def reset_password(email, old_password, new_password):
               WHERE password_hash=SHA2(%s,256) AND email=%s'''
     c.execute(sql, (new_password, old_password, email))
     conn.commit()
-    return response(True,f'Successfully changed password for {email}')
+    return ( f'Successfully changed password for {email}')
 
 
 # 3. Get content shared with email
@@ -245,13 +240,19 @@ def remove_member(email_owner, email_member, fg_name):
     sql = '''DELETE FROM Belong WHERE email_owner=%s AND email_member=%s AND fg_name=%s'''
     c.execute(sql, (email_owner, email_member, fg_name))
     conn.commit()
-    return response(True, 'Removed friend from fg')
+    return (True, 'Removed friend from fg')
 
 def create_group(email_owner, fg_name, description):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''INSERT INTO FriendGroup(fg_name, email, description)
               VALUES (%s,%s,%s)'''
     c.execute(sql, (fg_name, email_owner, description))
+    conn.commit()
+
+def remove_group(email_owner, fg_name):
+    c = conn.cursor(pymysql.cursors.DictCursor)
+    sql = '''DELETE FROM FriendGroup WHERE fg_name=%s and email=%s'''
+    c.execute(sql, (fg_name, email_owner))
     conn.commit()
 
 def get_groups(email_owner):
@@ -349,7 +350,7 @@ def add_friend(email, email_friend):
               VALUES (%s, %s)'''
     c.execute(sql, (email, email_friend))
     conn.commit()
-    return response(True, 'Added friend.')
+    return (True, 'Added friend.')
 
 
 def remove_friend(email, email_friend):

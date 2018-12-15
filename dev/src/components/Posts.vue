@@ -56,7 +56,7 @@ export default {
     return {
       content: [],
       page: 1,
-      group_names: ['test1', 'test2'],
+      group_names: [],
       create_new: false
     }
   },

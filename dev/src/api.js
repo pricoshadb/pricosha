@@ -1,6 +1,8 @@
 import './plugins/axios'
 // axios.defaults.baseURL = 'https://pricoshaapi.drew.hu'
-axios.defaults.baseURL = 'http://localhost:5000'
+// axios.defaults.baseURL = 'http://localhost:5000'
+axios.defaults.withCredentials = true
+// console.log(axios.defaults)
 axios.interceptors.request.use(request => {
   console.log('Starting Request: '+request.url, request)
   return request

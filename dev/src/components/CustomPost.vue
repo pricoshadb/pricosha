@@ -48,11 +48,11 @@ export default {
       if (this.$refs.form.validate()) {
         let formdata = new FormData()
         let data = {
-          'is_pub', this.is_pub,
-          'item_name', this.item_name
+          'is_pub': this.is_pub,
+          'item_name': this.item_name
         }
-        data.append('data', JSON.stringify(data))
-        data.append('image_content', this.image_content)
+        formdata.append('data', JSON.stringify(data))
+        formdata.append('image_content', this.image_content)
         this.$pricosha.setPost(formdata).then(response => {
           this.$emit('submit')
         })

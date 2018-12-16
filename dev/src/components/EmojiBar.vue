@@ -54,12 +54,7 @@ export default {
   data() {
     return {
       search: '',
-      emotes: [
-        {
-          emoji: '🙃',
-          count: 2
-        }
-      ]
+      emotes: []
     }
   },
   methods: {

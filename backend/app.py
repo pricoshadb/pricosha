@@ -162,8 +162,8 @@ def get_saved_posts():
         return response(False, 'User not logged in')
     req = request.args
     email = session['email']
-    page = req.get('page',1)
-    results_per_page = req.get('results_per_page',10)
+    page = req.get('page', 1)
+    results_per_page = req.get('results_per_page', 10)
     saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
     return response(True, saved_posts)
 
@@ -304,8 +304,11 @@ def get_profile_info():
     #   friend: false,
     # }
     req = request.args
-    email = req['email']
-    profile_info = helpers.get_profile_info(email)
+    email_other = req['email']
+    email = ''
+    if 'email' in session:
+        email = session['email']
+    profile_info = helpers.get_profile_info(email, email_other)
     return response(True, profile_info)
 
 

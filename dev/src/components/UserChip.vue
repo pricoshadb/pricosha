@@ -1,7 +1,7 @@
 <template lang="html">
   <v-dialog max-width="500">
     <v-chip slot='activator' :color='color' :text-color='textColor' :close='close'>
-      <v-avatar>
+      <v-avatar v-if='user.avatar'>
         <img :src="user.avatar">
       </v-avatar>
       {{user.first_name}} {{user.last_name}}

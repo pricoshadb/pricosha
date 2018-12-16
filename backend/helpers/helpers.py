@@ -5,7 +5,8 @@ from helpers.util import response
 conn = pymysql.connect(host='localhost',
                        user='user',
                        password='pricosha',
-                       db='pricosha')
+                       db='pricosha',
+                       charset="utf8")
 
 
 # Helper functions
@@ -16,9 +17,10 @@ def can_see(email, item_id):
     sql = '''select count(*) AS cnt from ContentItem 
                 NATURAL JOIN Share 
                 NATURAL JOIN Belong 
-                WHERE (email_member=%s OR is_pub=True) AND item_id=%s'''
+                WHERE (email_member=%s OR is_pub=1) AND item_id=%s'''
     c.execute(sql, (email, item_id))
     result = c.fetchone()
+    c.close()
     return result['cnt'] > 0
 
 
@@ -46,13 +48,15 @@ def get_public_content(page=1, results_per_page=10):
             'email': content_item['email'],
             'post_time': content_item['post_time'],
             'item_name': content_item['item_name'],
-            'file_path': '%simg/%s' % ('https://pricosha.drew.hu/', content_item['file_path']),
-            'tagged': ['temp', 'vals']
+            # FIXME: file images
+            'file_path': '%simg/%s' % ('', content_item['file_path']),
+            'tagged': []
             # TODO: tagged people
         }
         if content_item['file_path'] is None:
             formatted_data['file_path'] = 'https://pricosha.drew.hu/img/none.jpg'
         content_items.append(formatted_data)
+    c.close()
     return content_items
 
 def get_post(item_id):
@@ -62,6 +66,7 @@ def get_post(item_id):
               WHERE is_pub=1 AND item_id=%s'''
     c.execute(sql, (item_id,))
     result = c.fetchall()
+    c.close()
     return result
 
 # 2. Gets user login info
@@ -76,6 +81,7 @@ def get_login(email, password):
     if person is None:
         return {'success': False}
 
+    c.close()
     # Check password and log user in if success
     if person['password_hash'] == hashlib.sha256(password.encode('utf8')).hexdigest():
         # Log the user in and set session variables
@@ -105,6 +111,7 @@ def register(email, password, first_name, last_name):
               VALUES (%s,SHA2(%s, 256), %s, %s)'''
     c.execute(sql, (email, password, first_name, last_name))
     conn.commit()
+    c.close()
     return {'success': True, 'response': f'Successfully registered user {first_name} {last_name}'}
 
 
@@ -114,6 +121,7 @@ def reset_password(email, old_password, new_password):
               WHERE password_hash=SHA2(%s,256) AND email=%s'''
     c.execute(sql, (new_password, old_password, email))
     conn.commit()
+    c.close()
     return ( f'Successfully changed password for {email}')
 
 
@@ -127,6 +135,7 @@ def get_shared_content(email, page=1, results_per_page=10):
     start = (page - 1) * results_per_page
     c.execute(sql, (email, start, results_per_page))
     results = c.fetchall()
+    c.close()
     return results
 
 
@@ -139,22 +148,26 @@ def get_proposed_tags(email, page=1, results_per_page=10):
     start = (page - 1) * results_per_page
     c.execute(sql, (email, start, results_per_page))
     tags = c.fetchall()
+    c.close()
     return tags
 
 
 def modify_proposed_tag(email_tagger, email_tagged, item_id, decision):
     c = conn.cursor(pymysql.cursors.DictCursor)
     if decision == 'no decision':
+        c.close()
         return "No decision made"
     elif decision == 'accept':
         sql = '''UPDATE Tag SET status=1 WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
         c.execute(sql, (email_tagger, email_tagged, item_id))
         conn.commit()
+        c.close()
         return
     elif decision == 'decline':
         sql = '''DELETE FROM Tag WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
         c.execute(sql, (email_tagger, email_tagged, item_id))
         conn.commit()
+        c.close()
 
 
 # 5. Post a content item
@@ -168,6 +181,7 @@ def create_content_item(email, item_name, is_pub, file_path):
     c.execute(sql)
     last_insert = c.fetchone()
     conn.commit()
+    c.close()
     return last_insert
 
 
@@ -177,9 +191,11 @@ def tag_item(tagger_email, tagee_email, item_id):
 
     # Check if users have access to item
     if not can_see(tagger_email, item_id):
+        c.close()
         return 'Tagger does not have access to this item'
 
     if not can_see(tagee_email, item_id):
+        c.close()
         return 'Tagee does not have access to this item'
 
     confirmed = False
@@ -194,12 +210,14 @@ def tag_item(tagger_email, tagee_email, item_id):
     c.execute(sql, (tagger_email, tagee_email, item_id))
     result = c.fetchone()
     if result['cnt'] > 0:
+        c.close()
         return 'User is already tagged'
 
     sql = '''INSERT INTO Tag(email_tagger, email_tagged, item_id, tag_time, status)
               VALUES (%s,%s,%s,NOW(),%s)'''
     c.execute(sql, (tagger_email, tagee_email, item_id, confirmed))
     conn.commit()
+    c.close()
 
 
 # 7. Add friend
@@ -211,10 +229,12 @@ def add_member(owner_email, fg_name, friend_fname, friend_lname):
 
     # Check if person exists
     if len(person) == 0:
+        c.close()
         return 'Person does not exist'
 
     # Check if more than one person exists
     if len(person) > 1:
+        c.close()
         return 'More than one person exists with name'
 
     # Check if friend already exists in Friend Group
@@ -225,6 +245,7 @@ def add_member(owner_email, fg_name, friend_fname, friend_lname):
     c.execute(sql, (friend_fname, friend_lname, fg_name))
     r = c.fetchone()
     if r['count'] > 0:
+        c.close()
         return 'Person already exists in FriendGroup'
 
     # Add friend to friend group
@@ -232,6 +253,7 @@ def add_member(owner_email, fg_name, friend_fname, friend_lname):
               VALUES (%s,%s,%s)'''
     c.execute(sql, (owner_email, person[0]['email'], fg_name))
     conn.commit()
+    c.close()
     return 'Successfully added friend'
 
 def remove_member(email_owner, email_member, fg_name):
@@ -239,7 +261,8 @@ def remove_member(email_owner, email_member, fg_name):
     sql = '''DELETE FROM Belong WHERE email_owner=%s AND email_member=%s AND fg_name=%s'''
     c.execute(sql, (email_owner, email_member, fg_name))
     conn.commit()
-    return (True, 'Removed friend from fg')
+    c.close()
+    return True, 'Removed friend from fg'
 
 def create_group(email_owner, fg_name, description):
     c = conn.cursor(pymysql.cursors.DictCursor)
@@ -247,12 +270,14 @@ def create_group(email_owner, fg_name, description):
               VALUES (%s,%s,%s)'''
     c.execute(sql, (fg_name, email_owner, description))
     conn.commit()
+    c.close()
 
 def remove_group(email_owner, fg_name):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''DELETE FROM FriendGroup WHERE fg_name=%s and email=%s'''
     c.execute(sql, (fg_name, email_owner))
     conn.commit()
+    c.close()
 
 def get_groups(email_owner):
     c = conn.cursor(pymysql.cursors.DictCursor)
@@ -261,14 +286,18 @@ def get_groups(email_owner):
             where email=%s GROUP BY FriendGroup.fg_name'''
     c.execute(sql, (email_owner,))
     g = c.fetchall()
+    c.close()
     return g
 
 # Optional feature 2: Profile pages
-def get_profile_info(email):
+def get_profile_info(email, email_other):
     c = conn.cursor(pymysql.cursors.DictCursor)
-    sql = '''SELECT avatar, bio FROM Person WHERE email=%s'''
-    c.execute(sql, (email,))
+    sql = '''SELECT first_name, last_name, avatar, bio, IF(friends.email_friend IS NULL, FALSE, TRUE) as friend
+    FROM Person LEFT JOIN Friends ON(Person.email=Friends.email_friend AND Friends.email=%s) 
+    WHERE Person.email=%s'''
+    c.execute(sql, (email, email_other))
     profile = c.fetchone()
+    c.close()
     return profile
 
 def set_profile_bio(email, bio):
@@ -276,6 +305,7 @@ def set_profile_bio(email, bio):
     sql = '''UPDATE Person SET bio=%s WHERE email=%s'''
     c.execute(sql, (bio, email))
     conn.commit()
+    c.close()
     return True
 
 def set_profile_avatar(email, avatar):
@@ -283,6 +313,7 @@ def set_profile_avatar(email, avatar):
     sql = '''UPDATE Person SET avatar=%s WHERE email=%s'''
     c.execute(sql, (avatar, email))
     conn.commit()
+    c.close()
     return True
 
 # Optional feature 3: Saved posts. Returns post saved by user
@@ -295,6 +326,7 @@ def get_saved_posts(email, page, results_per_page):
     start = (page - 1) * results_per_page
     c.execute(sql, (email, start, results_per_page))
     saved_posts = c.fetchall()
+    c.close()
     return saved_posts
 
 
@@ -306,6 +338,7 @@ def save_post(email, item_id):
               VALUES (%s,NOW(),%s)'''
     c.execute(sql, (email, item_id))
     conn.commit()
+    c.close()
 
 
 def unsave_post(email, item_id):
@@ -313,6 +346,7 @@ def unsave_post(email, item_id):
     sql = '''DELETE FROM Saved WHERE email=%s AND item_id=%s'''
     c.execute(sql, (email, item_id))
     conn.commit()
+    c.close()
 
 
 # Optional feature 6. Post comments
@@ -324,6 +358,7 @@ def post_comment(email, item_id, comment):
               VALUES (%s, %s, NOW(), %s)'''
     c.execute(sql, (item_id, email, comment))
     conn.commit()
+    c.close()
     return True
 
 
@@ -334,6 +369,7 @@ def get_comments(email, item_id):
     sql = '''SELECT * FROM Comments WHERE item_id=%s'''
     c.execute(sql, (item_id,))
     comments = c.fetchall()
+    c.close()
     return comments
 
 
@@ -341,6 +377,7 @@ def get_friends(email):
     c = conn.cursor(pymysql.cursors.DictCursor)
     sql = '''SELECT email_friend FROM Friends WHERE email=%s'''
     c.execute(sql, (email,))
+    c.close()
     return c.fetchall()
 
 def add_friend(email, email_friend):
@@ -349,6 +386,7 @@ def add_friend(email, email_friend):
               VALUES (%s, %s)'''
     c.execute(sql, (email, email_friend))
     conn.commit()
+    c.close()
     return (True, 'Added friend.')
 
 
@@ -357,3 +395,4 @@ def remove_friend(email, email_friend):
     sql = '''DELETE FROM Friends WHERE email=%s AND email_friend=%s'''
     c.execute(sql, (email, email_friend))
     conn.commit()
+    c.close()

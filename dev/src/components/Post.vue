@@ -55,7 +55,7 @@
         class='ma-1 textwrap'
         v-for='comment in comments' :key='comment.email'>
           <v-card-text class='pa-1'>
-            <UserChip :email='comment.email'></UserChip>
+            <!-- <UserChip :email='comment.email'></UserChip> -->
             <br>
             {{comment.content}}
           </v-card-text>

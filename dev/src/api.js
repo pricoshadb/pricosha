@@ -4,12 +4,12 @@ import './plugins/axios'
 axios.defaults.withCredentials = true
 // console.log(axios.defaults)
 axios.interceptors.request.use(request => {
-  console.log('Starting Request: '+request.url, request)
+  console.log('Starting Request: ',request.url, request)
   return request
 })
 
 axios.interceptors.response.use(response => {
-  console.log('Response:', response)
+  console.log('Response: ',response.data, response)
   return response
 })
 
@@ -122,10 +122,10 @@ export default {
       }
     })
   },
-  setComment(item_id, content) {
+  setComment(item_id, comment) {
     return axios.post('/comments/post', {
       item_id: item_id,
-      content: content
+      comment: comment
     })
   },
   register(email, password, first_name, last_name) {

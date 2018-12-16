@@ -17,8 +17,10 @@ export default {
   authed: false,
   getPosts(url = 'public', page = 1, results_per_page = 10) {
     return axios.get('/posts/' + url, {
-      page: page,
-      results_per_page: results_per_page,
+      params: {
+        page: page,
+        results_per_page: results_per_page
+      }
     })
   },
   getPost(item_id) {

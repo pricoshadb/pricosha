@@ -7,7 +7,7 @@
       <div>
         <v-layout row>
           <h3 class="headline mb-0">{{item.item_name}}</h3>
-          <EmojiBar></EmojiBar>
+          <EmojiBar @emoji='rate($event)' :emotes='ratings'></EmojiBar>
         </v-layout>
         <UserChip :email='item.email' color='primary' text-color='white'></UserChip>
         <v-layout row  v-if='item.tagged'>
@@ -87,7 +87,8 @@ export default {
       comment_value: '',
       share_state: false,
       saved: false,
-      comments: []
+      comments: [],
+      ratings: []
     }
   },
   props: {
@@ -120,11 +121,17 @@ export default {
         })
         this.comment_value=''
       })
+    },
+    rate(emoji) {
+      this.$pricosha.setRating(this.item.item_id, emoji)
     }
   },
   created() {
     this.$pricosha.getComments(this.item.item_id).then(response => {
       this.comments = response.data
+    })
+    this.$pricosha.getRatings(this.item.item_id).then(response => {
+      this.ratings = response.data
     })
   }
 }

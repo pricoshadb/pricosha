@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS  Posted(
    email VARCHAR(50),
    item_id INT,
    rate_time DATETIME NOT NULL,
-   emoji VARCHAR(1),
+   emoji CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
    PRIMARY KEY (email, item_id),
    FOREIGN KEY (email) REFERENCES Person(email) ON DELETE CASCADE ,
    FOREIGN KEY (item_id) REFERENCES ContentItem(item_id) ON DELETE CASCADE);
@@ -81,3 +81,5 @@ CREATE TABLE IF NOT EXISTS Friends (
     FOREIGN KEY (email) REFERENCES Person(email),
     FOREIGN KEY (email_friend) REFERENCES Person(email)
 );
+ALTER DATABASE pricosha CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+ALTER TABLE Posted CHANGE emoji emoji VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

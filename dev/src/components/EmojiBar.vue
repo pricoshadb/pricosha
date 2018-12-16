@@ -49,12 +49,11 @@ export default {
     EmojiPicker
   },
   props: {
-
+    emotes: Array
   },
   data() {
     return {
-      search: '',
-      emotes: []
+      search: ''
     }
   },
   methods: {

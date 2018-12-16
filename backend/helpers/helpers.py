@@ -8,7 +8,7 @@ def connect_db():
                              user='user',
                              password='pricosha',
                              db='pricosha',
-                             charset="utf8",
+                             charset="utf8mb4",
                              cursorclass=pymysql.cursors.DictCursor)
 
 
@@ -398,7 +398,7 @@ def add_friend(email, email_friend):
     cursor.execute(sql, (email, email_friend))
     flask.g.connection.commit()
     
-    return (True, 'Added friend.')
+    return True, 'Added friend.'
 
 
 def remove_friend(email, email_friend):
@@ -406,4 +406,24 @@ def remove_friend(email, email_friend):
     sql = '''DELETE FROM Friends WHERE email=%s AND email_friend=%s'''
     cursor.execute(sql, (email, email_friend))
     flask.g.connection.commit()
-    
+
+
+def rate_post(email, item_id, emoji):
+    if not can_see(email, item_id):
+        return 'User is not allowed to save this content'
+    cursor = flask.g.connection.cursor()
+    sql = '''INSERT INTO Posted(email, item_id, rate_time, emoji)
+              VALUES (%s,%s,NOW(),%s)'''
+    cursor.execute(sql, (email, item_id, emoji))
+    flask.g.connection.commit()
+
+
+
+def post_ratings(email, item_id):
+    if not can_see(email, item_id):
+        return False, 'User is not allowed to save this content'
+    cursor = flask.g.connection.cursor()
+    sql = '''SELECT emoji FROM Posted WHERE item_id=%s'''
+    cursor.execute(sql, (item_id,))
+
+    return True, cursor.fetchall()

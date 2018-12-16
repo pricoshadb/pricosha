@@ -31,6 +31,19 @@ export default {
   setPost(formdata) { // Must be form for file upload
     return axios.post('/post/create', formdata)
   },
+  setRating(item_id, emoji) {
+    return axios.post('/rate', {
+      item_id: item_id,
+      emoji: emoji
+    })
+  },
+  getRatings(item_id) {
+    return axios.get('/ratings', {
+      params: {
+        item_id: item_id
+      }
+    })
+  },
   setTagged(item_id, tagee_email) {
     return axios.post('/tags/create', {
       item_id: item_id,

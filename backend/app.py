@@ -200,6 +200,26 @@ def unsave_post():
     return 'ok'
 
 
+@app.route('/rate', methods=['POST'])
+def rate_content_item():
+    if 'email' not in session:
+        return response(False, 'User not logged in')
+    req = request.get_json()
+    email = session['email']
+    emoji = req['emoji']
+    item_id = req['item_id']
+    helpers.rate_post(email, item_id, emoji)
+    return "ok"
+
+@app.route('/ratings')
+def ratings_content_item():
+    req = request.args
+    email = ''
+    if 'email' in session:
+        email = session['email']
+    item_id = req['item_id']
+    resp = helpers.post_ratings(email, item_id)
+    return response(resp[0], resp[1])
 
 
 # 6. Tag a content item

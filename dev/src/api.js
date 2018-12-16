@@ -31,9 +31,10 @@ export default {
   setPost(formdata) { // Must be form for file upload
     return axios.post('/post/create', formdata)
   },
-  setTagged(item_id) {
+  setTagged(item_id, tagee_email) {
     return axios.post('/tags/create', {
-      item_id: item_id
+      item_id: item_id,
+      tagee_email: tagee_email
     })
   },
   getProposedTags() {

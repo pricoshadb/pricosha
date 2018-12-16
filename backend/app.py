@@ -1,8 +1,8 @@
-from flask import Flask, session, request, jsonify, make_response, render_template, send_file
+from flask import Flask, session, request, jsonify, make_response, render_template, send_file, g
 from flask_cors import CORS, cross_origin
-import helpers.helpers as helpers
 import os.path
 from helpers.util import response
+import helpers.helpers as helpers
 import json
 
 '''
@@ -26,6 +26,14 @@ app.config['UPLOAD_FOLDER'] = '/home/user/pricosha/backend/img'
 # Allow all clients to access our api
 CORS(app, resources={r"/*": {"origins": '*'}}, supports_credentials=True)
 
+@app.before_request
+def before_request():
+    g.connection = helpers.connect_db()
+
+@app.teardown_request
+def teardown_request(exception):
+    if hasattr(g, 'connection'):
+        g.connection.close()
 
 
 @app.route('/')
@@ -353,6 +361,8 @@ def get_comments():
         email = session['email']
     item_id = req['item_id']
     comments = helpers.get_comments(email, item_id)
+    if not comments:
+        return response(False, 'User is not allowed to see this post')
     return response(True, comments)
 
 

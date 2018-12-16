@@ -15,52 +15,55 @@
             <v-list-tile-title>Home</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="drawer=false;content_source='shared'">
-          <v-list-tile-action>
-            <v-icon>share</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Shared Content</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="drawer=false;content_source='saved'">
-          <v-list-tile-action>
-            <v-icon>bookmark</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Saved Content</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <!-- groups -->
-        <v-list-tile @click="drawer=false;groups_dialog=true">
-          <v-list-tile-action>
-            <v-icon>group</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Groups</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-dialog max-width="600px"
-            v-model="groups_dialog">
-          <Groups
-              @end_dialog='groups_dialog=false'>
-          </Groups>
-        </v-dialog>
-        <!-- friends -->
-        <v-list-tile @click="drawer=false;friends_dialog=true">
-          <v-list-tile-action>
-            <v-icon>favorite</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Friends</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-dialog max-width="600px"
-            v-model="friends_dialog">
-          <Friends
-              @end_dialog='friends_dialog=false'>
-          </Friends>
-        </v-dialog>
+        <!-- logged users only -->
+        <template v-show='$pricosha.authed'>
+          <v-list-tile @click="drawer=false;content_source='shared'">
+            <v-list-tile-action>
+              <v-icon>share</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Shared Content</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile @click="drawer=false;content_source='saved'">
+            <v-list-tile-action>
+              <v-icon>bookmark</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Saved Content</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <!-- groups -->
+          <v-list-tile @click="drawer=false;groups_dialog=true">
+            <v-list-tile-action>
+              <v-icon>group</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Groups</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-dialog max-width="600px"
+              v-model="groups_dialog">
+            <Groups
+                @end_dialog='groups_dialog=false'>
+            </Groups>
+          </v-dialog>
+          <!-- friends -->
+          <v-list-tile @click="drawer=false;friends_dialog=true">
+            <v-list-tile-action>
+              <v-icon>favorite</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Friends</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-dialog max-width="600px"
+              v-model="friends_dialog">
+            <Friends
+                @end_dialog='friends_dialog=false'>
+            </Friends>
+          </v-dialog>
+        </template>
         <!-- Login/out -->
         <v-list-tile
             @click='drawer=false;logout()'

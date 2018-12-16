@@ -212,7 +212,7 @@ def tag_content_item():
     current_user = session['email']
     tagee_email = req['tagee_email']
     item_id = req['item_id']
-    tag_item = helpers.tag_item(current_user,tagee_email,item_id)
+    tag_item = helpers.tag_item(current_user, tagee_email,item_id)
     return response(True, tag_item)
 
 # 4. Manage tags
@@ -272,10 +272,10 @@ def remove_friend():
 def create_group():
     if 'email' not in session:
         return response(False, 'User not logged in')
-    req = request.args
+    req = request.get_json()
     email_owner = session['email']
     fg_name = req['fg_name']
-    description = req.get('description', None)
+    description = None #req.get('description', None)
     fg = helpers.create_group(email_owner, fg_name, description)
     return response(True, fg)
 
@@ -283,7 +283,7 @@ def create_group():
 def remove_group():
     if 'email' not in session:
         return response(False, 'User not logged in')
-    req = request.args
+    req = request.get_json()
     email_owner = session['email']
     fg_name = req['fg_name']
     fg = helpers.remove_group(email_owner, fg_name)

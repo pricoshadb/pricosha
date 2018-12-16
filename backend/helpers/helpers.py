@@ -207,13 +207,21 @@ def tag_item(tagger_email, tagee_email, item_id):
         confirmed = True
 
     cursor = flask.g.connection.cursor()
+    # Check if user exists
+    sql = '''SELECT COUNT(*) AS cnt FROM Person 
+              WHERE email=%s'''
+    cursor.execute(sql, (tagee_email,))
+    result = cursor.fetchone()
+    if result['cnt'] == 0:
+        return 'User does not exist'
+
+
     # Check if user is already tagged
     sql = '''SELECT COUNT(*) AS cnt FROM Tag 
               WHERE email_tagger=%s AND email_tagged=%s AND item_id=%s'''
     cursor.execute(sql, (tagger_email, tagee_email, item_id))
     result = cursor.fetchone()
     if result['cnt'] > 0:
-        
         return 'User is already tagged'
 
     sql = '''INSERT INTO Tag(email_tagger, email_tagged, item_id, tag_time, status)
@@ -323,9 +331,9 @@ def set_profile_avatar(email, avatar):
 def get_saved_posts(email, page, results_per_page):
     cursor = flask.g.connection.cursor()
     sql = '''SELECT * FROM Saved INNER JOIN ContentItem 
-              ON Saved.item_id = ContentItem.item_id 
+              USING(item_id)
               WHERE Saved.email=%s
-              ORDER BY post_time DESC LIMIT %s,%s'''
+              ORDER BY save_time DESC LIMIT %s,%s'''
     start = (page - 1) * results_per_page
     cursor.execute(sql, (email, start, results_per_page))
     saved_posts = cursor.fetchall()

@@ -99,19 +99,19 @@ export default {
   },
   methods: {
     addTag() {
-      this.$pricosha.setTagged(this.item, this.tag_value)
+      this.$pricosha.setTagged(this.item.item_id, this.tag_value)
       this.tag_value=''
       this.$emit('dirty')
     },
     toggleSave() {
       this.saved = !this.saved
       if (this.saved)
-        this.$pricosha.setSaved(this.item_id)
+        this.$pricosha.setSaved(this.item.item_id)
       else
-        this.$pricosha.removeSaved(this.item_id)
+        this.$pricosha.removeSaved(this.item.item_id)
     },
     sharePost(group) {
-      this.$pricosha.setShare(this.item_id, group)
+      this.$pricosha.setShare(this.item.item_id, group)
     },
     comment() {
       this.$pricosha.setComment(this.item.item_id, this.comment_value).then(response=> {

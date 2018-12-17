@@ -53,7 +53,7 @@ export default {
         }
         formdata.append('data', JSON.stringify(data))
         formdata.append('image_content', this.image_content)
-        this.$pricosha.setPost(formdata).then(response => {
+        this.pricosha.setPost(formdata).then(response => {
           this.$emit('submit')
         })
       }

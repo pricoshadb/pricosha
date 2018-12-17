@@ -56,7 +56,7 @@ export default {
     email: {
       immediate: true,
       handler (val, old) {
-        this.$pricosha.getProfile(val).then(response => {
+        this.pricosha.getProfile(val).then(response => {
           this.user = response.data
         })
       }
@@ -66,9 +66,9 @@ export default {
     toggleFriend() {
       this.user.friend = !this.user.friend
       if (this.user.friend)
-        this.$pricosha.setFriend(this.email)
+        this.pricosha.setFriend(this.email)
       else
-        this.$pricosha.removeFriend(this.email)
+        this.pricosha.removeFriend(this.email)
     },
   }
 }

@@ -56,7 +56,7 @@
       addGroup() {
         this.name_value=this.name_value.trim()
         if (!this.name_value) return
-        this.$pricosha.setGroup(this.name_value)
+        this.pricosha.setGroup(this.name_value)
         this.groups.push({
           fg_name: this.name_value,
           members:[]
@@ -64,19 +64,19 @@
         this.name_value=''
       },
       removeGroup(group) {
-        this.$pricosha.removeGroup(group.fg_name)
+        this.pricosha.removeGroup(group.fg_name)
         this.groups.splice(this.groups.indexOf(group),1)
       },
       removeGroupMember(group, member) {
-        this.$pricosha.removeGroupMember(group.fg_name, member)
+        this.pricosha.removeGroupMember(group.fg_name, member)
         group.members.splice(group.members.indexOf(member),1)
       },
       modifyGroup(group) {
-        this.$pricosha.setGroupMember(group.fg_name, group.members[-1])
+        this.pricosha.setGroupMember(group.fg_name, group.members[-1])
       }
     },
     created() {
-      this.$pricosha.getGroups().then(response => {
+      this.pricosha.getGroups().then(response => {
         this.groups = response.data
       })
     }

@@ -54,8 +54,8 @@
     },
     methods: {
       login() {
-        this.$pricosha.login(this.email, this.password).then(response => {
-          this.$pricosha.authed = true
+        this.pricosha.login(this.email, this.password).then(response => {
+          this.pricosha.authed = true
           this.$emit('success')
           this.$emit('end_dialog')
           this.error=''
@@ -65,7 +65,7 @@
         })
       },
       register() {
-        this.$pricosha.register(this.email, this.password, this.first_name, this.last_name).then(response => {
+        this.pricosha.register(this.email, this.password, this.first_name, this.last_name).then(response => {
           this.show_register = false
           this.login()
         }).catch(error => {

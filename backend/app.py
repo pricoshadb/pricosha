@@ -155,8 +155,8 @@ def get_shared_content():
         return response(False, 'User not logged in')
     req = request.args
     email = session['email']
-    page = req.get('page', 1)
-    results_per_page = req.get('results_per_page',10)
+    page = int(req.get('page', 1))
+    results_per_page = int(req.get('results_per_page',10))
     content = helpers.get_shared_content(email, page=page, results_per_page=results_per_page)
     return response(True, content)
 
@@ -170,8 +170,8 @@ def get_saved_posts():
         return response(False, 'User not logged in')
     req = request.args
     email = session['email']
-    page = req.get('page', 1)
-    results_per_page = req.get('results_per_page', 10)
+    page = int(req.get('page', 1))
+    results_per_page = int(req.get('results_per_page', 10))
     saved_posts = helpers.get_saved_posts(email=email, page=page, results_per_page=results_per_page)
     return response(True, saved_posts)
 

@@ -16,7 +16,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <!-- logged users only -->
-        <template v-show='$pricosha.authed'>
+        <template v-if='pricosha.authed'>
           <v-list-tile @click="drawer=false;content_source='shared'">
             <v-list-tile-action>
               <v-icon>share</v-icon>
@@ -67,7 +67,7 @@
         <!-- Login/out -->
         <v-list-tile
             @click='drawer=false;logout()'
-            v-if='$pricosha.authed'>
+            v-if='pricosha.authed'>
           <v-list-tile-action>
             <v-icon>meeting_room</v-icon>
           </v-list-tile-action>
@@ -77,7 +77,7 @@
         </v-list-tile>
         <v-list-tile
             @click='drawer=false;login_dialog=true'
-            v-if='!$pricosha.authed'>
+            v-if='!pricosha.authed'>
           <v-list-tile-action>
             <v-icon>meeting_room</v-icon>
           </v-list-tile-action>
@@ -89,7 +89,7 @@
             v-model="login_dialog">
           <Login
               @end_dialog='login_dialog=false'
-              @success='$pricosha.authed=true'>
+              @success='pricosha.authed=true'>
           </Login>
         </v-dialog>
       </v-list>
@@ -133,8 +133,8 @@
     },
     methods: {
       logout() {
-        this.$pricosha.logout().then(response => {
-          this.$pricosha.authed=false
+        this.pricosha.logout().then(response => {
+          this.pricosha.authed=false
         })
       }
     }

@@ -7,7 +7,12 @@ import Api from './api'
 
 
 Vue.config.productionTip = false
-Vue.prototype.$pricosha = Api
+
+Vue.mixin({
+  data() {
+    return { 'pricosha': Api }
+  }
+})
 
 new Vue({
   // router,

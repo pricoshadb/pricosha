@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height>
     <v-layout column>
-      <v-card flat v-if='create_new==false && $pricosha.authed'>
+      <v-card flat v-if='create_new==false && pricosha.authed'>
         <v-layout row justify-center class="py-2">
           <v-btn large color="primary" @click='create_new=true'>
             <v-icon>add</v-icon>
@@ -62,13 +62,13 @@ export default {
   },
   methods: {
     updatePost(item_id, index) {
-      this.$pricosha.getPost(item_id).then(
+      this.pricosha.getPost(item_id).then(
         response => {
           this.content[index] = response.data
         })
     },
     updatePosts() {
-      this.$pricosha.getPosts(this.src, this.page).then(
+      this.pricosha.getPosts(this.src, this.page).then(
         response => {
           this.content = response.data;
         });
@@ -76,7 +76,7 @@ export default {
   },
   created() {
     this.updatePosts()
-    this.$pricosha.getGroups(true).then(response => {
+    this.pricosha.getGroups(true).then(response => {
       this.group_names = response.data
     })
   },

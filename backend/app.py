@@ -270,11 +270,11 @@ def add_friend():
     if 'email' not in session:
         return response(False, 'User not logged in')
     req = request.get_json()
-    owner_email = session['email']
+    email_owner = session['email']
+    email_member = req['email']
     fg_name = req['fg_name']
-    friend_fname, friend_lname = req['friend_fname'], req['friend_lname']
-    friend = helpers.add_member(owner_email, fg_name, friend_fname, friend_lname)
-    return response(True, friend)
+    friend = helpers.add_member(email_owner, email_member, fg_name)
+    return response(friend[0], friend[1])
 
 @app.route('/group/members/remove', methods=['POST'])
 def remove_friend():
@@ -314,8 +314,10 @@ def remove_group():
 def get_groups():
     if 'email' not in session:
         return response(False, 'User not logged in')
+    req = request.args
+    names_only = 'true' == req.get('names_only', False)
     email_owner = session['email']
-    fg = helpers.get_groups(email_owner)
+    fg = helpers.get_groups(email_owner, names_only)
     return response(True, fg)
 
 
@@ -381,9 +383,7 @@ def get_comments():
         email = session['email']
     item_id = req['item_id']
     comments = helpers.get_comments(email, item_id)
-    if not comments:
-        return response(False, 'User is not allowed to see this post')
-    return response(True, comments)
+    return response(comments[0], comments[1])
 
 
 # deletes comment if user wrote comment or if user owns post

@@ -232,40 +232,39 @@ def tag_item(tagger_email, tagee_email, item_id):
 
 
 # 7. Add friend
-def add_member(owner_email, fg_name, friend_fname, friend_lname):
+def add_member(email_owner, email_member, fg_name):
     cursor = flask.g.connection.cursor()
-    sql = '''SELECT * FROM Person WHERE first_name=%s AND last_name=%s'''
-    cursor.execute(sql, (friend_fname, friend_lname))
-    person = cursor.fetchall()
+    # sql = '''SELECT * FROM Person WHERE first_name=%s AND last_name=%s'''
+    # cursor.execute(sql, (friend_fname, friend_lname))
+    # person = cursor.fetchall()
 
     # Check if person exists
-    if len(person) == 0:
-        
-        return 'Person does not exist'
-
-    # Check if more than one person exists
-    if len(person) > 1:
-        
-        return 'More than one person exists with name'
+    # if len(person) == 0:
+    #
+    #     return 'Person does not exist'
+    #
+    # # Check if more than one person exists
+    # if len(person) > 1:
+    #
+    #     return 'More than one person exists with name'
 
     # Check if friend already exists in Friend Group
-    sql = '''SELECT COUNT(*) as count FROM Person INNER JOIN Belong 
-              ON Person.email = Belong.email_member 
-              WHERE first_name=%s AND last_name=%s AND fg_name = %s;'''
+    sql = '''SELECT COUNT(*) as count FROM Belong  
+              WHERE email_member=%s AND fg_name = %s;'''
 
-    cursor.execute(sql, (friend_fname, friend_lname, fg_name))
+    cursor.execute(sql, (email_member, fg_name))
     r = cursor.fetchone()
     if r['count'] > 0:
         
-        return 'Person already exists in FriendGroup'
+        return False, 'Person already exists in FriendGroup'
 
     # Add friend to friend group
     sql = '''INSERT INTO Belong(email_owner, email_member, fg_name)
               VALUES (%s,%s,%s)'''
-    cursor.execute(sql, (owner_email, person[0]['email'], fg_name))
+    cursor.execute(sql, (email_owner, email_member, fg_name))
     flask.g.connection.commit()
     
-    return 'Successfully added friend'
+    return True, 'Successfully added friend'
 
 def remove_member(email_owner, email_member, fg_name):
     cursor = flask.g.connection.cursor()
@@ -290,15 +289,55 @@ def remove_group(email_owner, fg_name):
     flask.g.connection.commit()
     
 
-def get_groups(email_owner):
+def get_groups(email_owner, names_only):
     cursor = flask.g.connection.cursor()
-    sql = '''SELECT FriendGroup.fg_name, description, email_member FROM FriendGroup JOIN Belong 
+    sql = '''
+    SELECT FriendGroup.fg_name, description, email_member FROM FriendGroup LEFT OUTER JOIN Belong 
             ON email=email_owner AND FriendGroup.fg_name=Belong.fg_name 
-            where email=%s GROUP BY FriendGroup.fg_name'''
-    cursor.execute(sql, (email_owner,))
-    g = cursor.fetchall()
-    
-    return g
+            where email=%(user)s
+            UNION
+    SELECT FriendGroup.fg_name, description, email_member FROM FriendGroup LEFT OUTER JOIN Belong 
+            ON email=email_owner AND FriendGroup.fg_name=Belong.fg_name 
+            where email=%(user)s
+            Group BY FriendGroup.fg_name'''
+    if names_only:
+        sql = '''SELECT fg_name FROM FriendGroup
+            where email=%(user)s'''
+    cursor.execute(sql, {'user':email_owner})
+    raw = cursor.fetchall()
+    if names_only:
+        return [d['fg_name'] for d in raw]
+    else:
+
+        formatted = []
+        obj = None
+        name = None
+        for entry in raw:
+            # if not any(obj['fg_name'] == entry['fg_name'] for obj in formatted):
+            #     formatted.append({
+            #         'fg_name': entry['fg_name'],
+            #         'description': entry['description'],
+            #         'members': [
+            #             entry['email_member']
+            #         ]
+            #     })
+            if name == entry['fg_name']:
+                obj['members'].append(entry['email_member'])
+            else:
+                if obj:
+                    formatted.append(obj)
+                name = entry['fg_name']
+                obj = entry.copy()
+                del obj['email_member']
+                obj['members'] = []
+                if entry['email_member']:
+                    obj['members'].append(entry['email_member'])
+        formatted.append(obj)
+        return formatted
+
+
+
+
 
 # Optional feature 2: Profile pages
 def get_profile_info(email, email_other):
@@ -375,13 +414,13 @@ def post_comment(email, item_id, comment):
 
 def get_comments(email, item_id):
     if not can_see(email, item_id):
-        return False
+        return False, "Unauthorized"
     cursor = flask.g.connection.cursor()
     sql = '''SELECT * FROM Comments WHERE item_id=%s'''
     cursor.execute(sql, (item_id,))
     comments = cursor.fetchall()
     
-    return comments
+    return True, comments
 
 
 def get_friends(email):

@@ -21,8 +21,8 @@ def can_see(email, item_id):
     sql = '''select count(*) AS cnt from ContentItem 
                 LEFT JOIN Share USING(email, item_id)
                 LEFT JOIN Belong ON(email_owner=email and Share.fg_name=Belong.fg_name)
-                WHERE (email_member=%s OR is_pub=1) AND item_id=%s'''
-    cursor.execute(sql, (email, item_id))
+                WHERE (email_member=%s OR email_owner=%s OR is_pub=1) AND item_id=%s'''
+    cursor.execute(sql, (email,email, item_id))
     result = cursor.fetchone()
     
     return result['cnt'] > 0
